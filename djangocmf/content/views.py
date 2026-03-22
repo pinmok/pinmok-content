@@ -1,3 +1,12 @@
-from django.shortcuts import render
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+content.views module
 
-# Create your views here.
+Description:
+
+Author:
+  惠达浪 <crazys@126.com>
+Created:
+  2026-01-17
+"""

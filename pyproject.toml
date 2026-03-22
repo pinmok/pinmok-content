@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "djangocmf-content"
+version = "1.0.0"
+description = "DjangoCMF content module"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "惠达浪", email = "crazys@126.com" }]
+requires-python = ">=3.11"
+dependencies = ["django>=5.0", "djangocmf>=1.0"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Framework :: Django",
+    "Framework :: Django :: 5",
+    "Framework :: Django :: 6",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+]
+
+[tool.setuptools]
+packages = ["djangocmf.content"]
