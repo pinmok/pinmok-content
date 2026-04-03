@@ -1,0 +1,13 @@
+{% load cmf_tags %}
+<div class="mb-3">
+    <label for="{{ field.id_for_label }}" class="form-label{% if field.field.required %} required{% endif %}">{{ field.label }}</label>
+    {% if field.errors %}
+        {{ field|add_class:'is-invalid' }}
+        <div class="invalid-feedback">{{ field.errors }}</div>
+    {% else %}
+        {{ field }}
+    {% endif %}
+    {% if field.help_text %}
+        <small class="form-hint{% if field.is_hidden %} hidden{% endif %}">{{ field.help_text|safe }}</small>
+    {% endif %}
+</div>

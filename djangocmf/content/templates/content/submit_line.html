@@ -1,0 +1,14 @@
+{% load i18n admin_modify admin_urls %}
+<div class="submit-row">
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+        {% if show_save %}
+            <button type="submit" name="_save" class="btn btn-primary">{% trans "Save" %}</button>
+        {% endif %}
+
+        {% for btn in transition_buttons %}
+            <button type="submit" name="{{ btn.name }}" class="btn {{ btn.class }}">{{ btn.label }}</button>
+        {% endfor %}
+
+        <a href="{% url opts|admin_urlname:'changelist' %}" class="btn btn-secondary ms-auto">{% trans "Back" %}</a>
+    </div>
+</div>

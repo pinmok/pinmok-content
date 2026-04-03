@@ -17,9 +17,9 @@ from django.utils.translation import gettext_lazy as _
 class ArticleStatus(models.TextChoices):
     DRAFT = 'draft', _('Draft')
     PENDING = 'pending', _('Pending')
+    RETURNED = 'returned', _('Returned')
     PUBLISHED = 'published', _('Published')
-    ARCHIVED = 'archived', _('Archived')
-    REJECTED = 'rejected', _('Rejected')
+    DELETED = 'deleted', _('Deleted')
 
 
 class ArticleType(models.TextChoices):
@@ -28,7 +28,7 @@ class ArticleType(models.TextChoices):
 
 
 class Usage(models.TextChoices):
-    THUMBNAIL = 'thumbnail', _('Thumbnail')
     GALLERY = 'gallery', _('Gallery')
+    ATTACHMENT = 'attachment', _('Attachment')
     VIDEO = 'video', _('Video')
     AUDIO = 'audio', _('Audio')

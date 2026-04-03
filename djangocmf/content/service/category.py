@@ -15,9 +15,7 @@ Created:
 """
 from dataclasses import dataclass
 
-from django.utils.translation import get_language
-
-from djangocmf.content.models import Category, CategoryTranslation
+from djangocmf.content.models import Category
 from djangocmf.core.libs.tree import TreeNode
 
 
@@ -45,24 +43,16 @@ class CategoryService:
         Falls back to the first available translation if the current language
         is not found.
         """
-        language = get_language()
-
-        # Fetch all translations for the current language and fallback
-        translations = CategoryTranslation.objects.filter(
-            language=language
-        ).values('category_id', 'name')
-        name_map = {t['category_id']: t['name'] for t in translations}
-
-        categories = Category.objects.values('id', 'parent_id', 'sort_order')
-        nodes = []
-        for cat in categories:
-            nodes.append(CategoryNode(
+        categories = Category.objects.values('id', 'parent_id', 'sort_order', 'name')
+        return [
+            CategoryNode(
                 id=cat['id'],
                 parent_id=cat['parent_id'],
                 sort_order=cat['sort_order'],
-                name=name_map.get(cat['id'], f'Category({cat["id"]})'),
-            ))
-        return nodes
+                name=cat['name'],
+            )
+            for cat in categories
+        ]
 
     @classmethod
     def get_items(cls) -> list[tuple[CategoryNode, str]]:

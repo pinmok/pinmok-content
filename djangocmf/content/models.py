@@ -19,7 +19,6 @@ from django.utils.translation import gettext_lazy as _
 from djangocmf.cmfadmin.models import Resource
 from djangocmf.content.enums import ArticleStatus, ArticleType, Usage
 from djangocmf.core.constants import DEFAULT_SORT_ORDER
-from djangocmf.core.utils.helper import get_translated_name
 
 
 def generate_uuid_hex():
@@ -54,30 +53,6 @@ class Category(models.Model):
         _('sort order'),
         default=DEFAULT_SORT_ORDER
     )
-
-    class Meta:
-        verbose_name = _('category')
-        verbose_name_plural = _('categories')
-
-    def __str__(self):
-        return get_translated_name(self)
-
-
-class CategoryTranslation(models.Model):
-    """
-    Translated fields for Category.
-    """
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-        related_name='translations',
-        verbose_name=_('category')
-    )
-    language = models.CharField(
-        _('language'),
-        max_length=10,
-        choices=settings.LANGUAGES,
-    )
     name = models.CharField(
         _('category name'),
         max_length=255
@@ -108,83 +83,30 @@ class CategoryTranslation(models.Model):
     )
 
     class Meta:
-        verbose_name = _('category translation')
-        verbose_name_plural = _('category translations')
-        unique_together = [('category', 'language')]
+        verbose_name = _('category')
+        verbose_name_plural = _('categories')
+        ordering = ['sort_order', 'id']
 
     def __str__(self):
         return f"{_('category')}: {self.name}"
 
 
-class Tag(models.Model):
-    """
-    Article tag, flat structure.
-    """
-    is_active = models.BooleanField(
-        _('is active'),
-        default=True
-    )
-    sort_order = models.PositiveIntegerField(
-        _('sort order'),
-        default=DEFAULT_SORT_ORDER
-    )
-
-    class Meta:
-        verbose_name = _('tag')
-        verbose_name_plural = _('tags')
-        ordering = ['sort_order']
-
-    def __str__(self):
-        return get_translated_name(self)
-
-
-class TagTranslation(models.Model):
-    """
-    Translated fields for Tag.
-    """
-    tag = models.ForeignKey(
-        Tag,
-        on_delete=models.CASCADE,
-        related_name='translations',
-        verbose_name=_('tag')
-    )
-    language = models.CharField(
-        _('language'),
-        max_length=10,
-        choices=settings.LANGUAGES,
-    )
-    name = models.CharField(
-        _('name'),
-        max_length=255
-    )
-
-    class Meta:
-        verbose_name = _('tag translation')
-        verbose_name_plural = _('tag translations')
-        unique_together = [('tag', 'language')]
-
-    def __str__(self):
-        return f"{_('name')}: {self.name}"
-
-
 class Article(models.Model):
+    """
+    Article master record. Language-independent fields only.
+    Translatable content is stored in ArticleTranslation.
+    """
     categories = models.ManyToManyField(
         Category,
         blank=True,
         related_name='articles',
         verbose_name=_('categories')
     )
-    tags = models.ManyToManyField(
-        Tag,
-        blank=True,
-        related_name='articles',
-        verbose_name=_('tags')
-    )
     article_uuid = models.CharField(
         _('UUID'),
         max_length=32,
         unique=True,
-        default=generate_uuid_hex  # fix: pass function reference
+        default=generate_uuid_hex
     )
     type = models.CharField(
         _('type'),
@@ -198,16 +120,18 @@ class Article(models.Model):
         blank=True,
         default=''
     )
-    translation_group = models.CharField(
-        _('translation group'),
-        max_length=32,
+    slug = models.CharField(
+        _('slug'),
+        max_length=255,
+        blank=True,
+        default='',
         db_index=True,
-        default=generate_uuid_hex
+        help_text=_('URL path for direct access (pages only).')
     )
-    language_code = models.CharField(
-        _('language code'),
-        max_length=10,
-        choices=settings.LANGUAGES
+    cover = models.ImageField(
+        _('cover image'),
+        null=True,
+        blank=True,
     )
     status = models.CharField(
         _('status'),
@@ -218,40 +142,6 @@ class Article(models.Model):
     sort_order = models.PositiveIntegerField(
         _('sort order'),
         default=DEFAULT_SORT_ORDER
-    )
-    # --- merged from ArticleTranslation ---
-    title = models.CharField(
-        _('title'),
-        max_length=255,
-        default=''
-    )
-    summary = models.TextField(
-        _('summary'),
-        blank=True,
-        default=''
-    )
-    content = models.TextField(
-        _('content'),
-        blank=True,
-        default=''
-    )
-    meta_title = models.CharField(
-        _('meta title'),
-        max_length=255,
-        blank=True,
-        default=''
-    )
-    meta_description = models.CharField(
-        _('meta description'),
-        max_length=500,
-        blank=True,
-        default=''
-    )
-    meta_keywords = models.CharField(
-        _('meta keywords'),
-        max_length=255,
-        blank=True,
-        default=''
     )
     extra = models.JSONField(
         _('extra'),
@@ -282,14 +172,113 @@ class Article(models.Model):
         ]
 
     def __str__(self):
-        return self.title or f'Article({self.article_uuid})'
+        # Try to return the default-language title, fall back to UUID
+        translation = self.get_translation()
+        return translation.title if translation and translation.title else f'Article({self.article_uuid})'
+
+    def get_translation(self, language_code=None):
+        """
+        Return the ArticleTranslation for the given language code.
+        Falls back to settings.LANGUAGE_CODE, then any available translation.
+        Works with or without prefetch_related('translations').
+        """
+        language_code = language_code or settings.LANGUAGE_CODE
+        translations = self.translations.all()
+        result = next((t for t in translations if t.language_code == language_code), None)
+        if result is None:
+            result = next(iter(translations), None)
+        return result
+
+
+class ArticleTranslation(models.Model):
+    """
+    Language-specific content for an Article.
+    One row per (article, language_code) combination.
+    """
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE,
+        related_name='translations',
+        verbose_name=_('article')
+    )
+    language_code = models.CharField(
+        _('language'),
+        max_length=10,
+        choices=settings.LANGUAGES,
+        default=settings.LANGUAGE_CODE
+    )
+    title = models.CharField(
+        _('title'),
+        max_length=255,
+        default=''
+    )
+    subtitle = models.CharField(
+        _('subtitle'),
+        max_length=255,
+        blank=True,
+        default=''
+    )
+    summary = models.TextField(
+        _('summary'),
+        blank=True,
+        default=''
+    )
+    content = models.TextField(
+        _('content'),
+        blank=True,
+        default=''
+    )
+    meta_title = models.CharField(
+        _('meta title'),
+        max_length=255,
+        blank=True,
+        default=''
+    )
+    meta_description = models.CharField(
+        _('meta description'),
+        max_length=500,
+        blank=True,
+        default=''
+    )
+    meta_keywords = models.CharField(
+        _('meta keywords'),
+        max_length=255,
+        blank=True,
+        default=''
+    )
+
+    class Meta:
+        verbose_name = _('article translation')
+        verbose_name_plural = _('article translations')
+        unique_together = [('article', 'language_code')]
+        ordering = ['language_code']
+
+    def __str__(self):
+        return f'{self.article} [{self.language_code}]'
+
+
+class Page(Article):
+    """
+    Proxy model for page-type articles.
+    Shares the same database table as Article, filtered by type=PAGE.
+    """
+
+    class Meta:
+        proxy = True
+        verbose_name = _('page')
+        verbose_name_plural = _('pages')
+
+    def save(self, *args, **kwargs):
+        # Always enforce type=PAGE for this proxy
+        self.type = ArticleType.PAGE
+        super().save(*args, **kwargs)
 
 
 class ArticleResource(models.Model):
     """
-    Intermediate table for Article and Resource.
+    Intermediate table linking Article master records to Resources.
+    Shared across all language versions of the same article.
     """
-
     article = models.ForeignKey(
         Article,
         on_delete=models.CASCADE,
@@ -308,10 +297,9 @@ class ArticleResource(models.Model):
         choices=Usage.choices  # noqa
     )
     alt = models.CharField(
-        _('alt'),
+        _('alternative text'),
         max_length=255,
         blank=True,
-        default=''
     )
     sort_order = models.PositiveIntegerField(
         _('sort order'),
