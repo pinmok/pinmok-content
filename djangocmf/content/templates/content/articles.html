@@ -10,7 +10,11 @@
         <div class="col-md-9">
             <div class="card mb-3">{% ribbon original.status %}
                 <div class="card-header">
-                    <ul class="nav nav-tabs card-header-tabs" id="translation-tab-nav" data-bs-toggle="tabs" role="tablist">
+                    <ul class="nav nav-tabs card-header-tabs"
+                        id="translation-tab-nav"
+                        data-bs-toggle="tabs"
+                        data-use-i18n="{{ USE_I18N|yesno:'true,false' }}"
+                        role="tablist">
                         <li class="nav-item" id="translation-add-tab">
                             <a class="nav-link text-success btn" id="translation-add-btn">
                                 {% icon 'tabler-plus' 'icon icon-sm' %}{% translate 'Add translation' %}
@@ -20,11 +24,12 @@
                 </div>
                 <div class="card-body">
                     {% for inline_admin_formset in inline_admin_formsets %}
-                        {% include inline_admin_formset.opts.template %}
+                        {% if inline_admin_formset.formset.prefix == 'translations' %}
+                            {% include inline_admin_formset.opts.template %}
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
-
         </div>
         <div class="col-md-3">
             {% for fieldset in adminform %}
@@ -32,6 +37,11 @@
             {% endfor %}
         </div>
     </div>
+    {% for inline_admin_formset in inline_admin_formsets %}
+        {% if inline_admin_formset.formset.prefix == 'article_resources' %}
+            {% include inline_admin_formset.opts.template %}
+        {% endif %}
+    {% endfor %}
 {% endblock %}
 
 {% block after_field_sets %}{{ adminform.form.non_field_errors }}{% endblock %}

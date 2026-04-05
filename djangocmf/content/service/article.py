@@ -15,7 +15,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from djangocmf.content.enums import ArticleStatus
+from djangocmf.content.enums import ArticleStatus, ArticleSubmitAction
 
 
 class ArticleService:
@@ -64,51 +64,32 @@ class ArticleService:
         Return button config list for the changeform submit row.
 
         Each button dict has:
-          name    — POST key, matched in _SUBMIT_ACTIONS
+          name    — POST key, matched in ArticleSubmitAction
           label   — display text
-          class   — CSS class for styling
-        A None entry inserts a visual separator.
+          class   — Bootstrap btn class for styling
         Save button is always rendered separately in the template.
         """
+
+        def btn(action: ArticleSubmitAction, css: str) -> dict:
+            return {'name': action.value, 'label': action.label, 'class': css}
+
         buttons = []
+        match current_status:
+            case ArticleStatus.DRAFT | ArticleStatus.RETURNED:
+                buttons = [btn(ArticleSubmitAction.PENDING, 'btn-warning')]
 
-        if current_status == ArticleStatus.DRAFT:
-            buttons.append({
-                'name': '_submit_pending',
-                'label': _('Submit for review'),
-                'class': 'btn-warning',
-            })
+            case ArticleStatus.PENDING if has_publish_perm:
+                buttons = [
+                    btn(ArticleSubmitAction.PUBLISH, 'btn-success'),
+                    btn(ArticleSubmitAction.REJECT, 'btn-danger'),
+                ]
 
-        elif current_status == ArticleStatus.PENDING:
-            if has_publish_perm:
-                buttons.append({
-                    'name': '_submit_publish',
-                    'label': _('Publish'),
-                    'class': 'btn-success',
-                })
-                buttons.append({
-                    'name': '_submit_reject',
-                    'label': _('Return'),
-                    'class': 'btn-danger',
-                })
+            case ArticleStatus.PUBLISHED if has_publish_perm:
+                buttons = [btn(ArticleSubmitAction.RETRACT, 'btn-danger')]
 
-        elif current_status == ArticleStatus.PUBLISHED:
-            if has_publish_perm:
-                buttons.append({
-                    'name': '_submit_reject',
-                    'label': _('Retract'),
-                    'class': 'btn-danger',
-                })
-
-        elif current_status == ArticleStatus.RETURNED:
-            buttons.append({
-                'name': '_submit_pending',
-                'label': _('Submit for review'),
-                'class': 'btn-warning',
-            })
-
-        # DELETED: no buttons
-
+            case _:
+                pass
+        
         return buttons
 
     # Save button visibility per status

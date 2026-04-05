@@ -22,25 +22,12 @@ register = template.Library()
 @register.simple_tag
 def ribbon(status: str):
     """Return a Bootstrap ribbon HTML representing the article status."""
-    status_map = {
-        ArticleStatus.DRAFT: ('bg-success', ArticleStatus.DRAFT.label),
-        ArticleStatus.PENDING: ('bg-warning', ArticleStatus.PENDING.label),
-        ArticleStatus.RETURNED: ('bg-danger', ArticleStatus.RETURNED.label),
-        ArticleStatus.PUBLISHED: ('bg-primary', ArticleStatus.PUBLISHED.label),
-        ArticleStatus.DELETED: ('bg-dark', ArticleStatus.DELETED.label),
-    }
-
-    # normalize → try convert to enum
     try:
         status_enum = ArticleStatus(status)
+        css_class = f'bg-{status_enum.color}'
+        label = status_enum.label
     except (ValueError, TypeError):
-        status_enum = None
-
-    # fallback
-    if status_enum not in status_map:
         css_class = 'bg-secondary'
         label = _('New Article')
-    else:
-        css_class, label = status_map[status_enum]
 
     return mark_safe(f'<div class="ribbon {css_class}">{label}</div>')

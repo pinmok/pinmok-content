@@ -148,6 +148,14 @@ class Article(models.Model):
         default=dict,
         blank=True
     )
+    is_top = models.BooleanField(
+        _('is top'),
+        default=False
+    )
+    is_recommended = models.BooleanField(
+        _('recommended'),
+        default=False
+    )
     published_at = models.DateTimeField(
         _('published at'),
         null=True,
