@@ -201,7 +201,12 @@ class PageAdmin(ArticleAdmin):
     """
     menu_order = 2000
     fields = ['slug', 'cover', 'template', 'sort_order', 'extra']
-    list_display = ['get_title', 'status_display', 'published_at']
+    list_display = ['get_title', 'slug', 'status_display', 'published_at']
+
+    @admin.display(description=_('status'))
+    def status_display(self, obj):
+        status = ArticleStatus(obj.status)
+        return mark_safe(f'<span class="badge bg-{status.color} text-{status.color}-fg">{status.label}</span>')
 
     def get_queryset(self, request):
         qs = (
