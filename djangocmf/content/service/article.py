@@ -10,12 +10,13 @@ Author:
 Created:
   2026/3/24
 """
-from django.conf import settings
 from django.core.exceptions import PermissionDenied
+from django.db.models import F
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, get_language
 
-from djangocmf.content.enums import ArticleStatus, ArticleSubmitAction
+from djangocmf.content.enums import ArticleStatus, ArticleSubmitAction, ArticleType
+from djangocmf.content.models import Article
 
 
 class ArticleService:
@@ -89,7 +90,7 @@ class ArticleService:
 
             case _:
                 pass
-        
+
         return buttons
 
     # Save button visibility per status
@@ -113,16 +114,22 @@ class ArticleService:
             return True
         return False
 
+    @staticmethod
+    def get_pages():
+        """
+        Return published PAGE articles with title in current language.
 
-def get_translated_name(obj, related_name='translations', language=None, fallback=None):
-    """
-    Get the translated name for a model instance.
-    Works with or without prefetch_related.
-    """
-    language = language or settings.LANGUAGE_CODE
-    fallback = fallback or f'{obj.__class__.__name__}({obj.pk})'
-    translations = getattr(obj, related_name).all()
-    translation = next((t for t in translations if t.language_code == language), None)
-    if not translation:
-        translation = next(iter(translations), None)
-    return translation.name if translation else fallback
+        Returns:
+            QuerySet[dict]: Each item contains:
+                - uuid: article UUID
+                - translations__title: title in current language
+
+        Notes:
+            - Assumes one translation per article per language.
+            - Uses Django ORM values() query.
+        """
+        return Article.objects.filter(
+            type=ArticleType.PAGE,
+            status=ArticleStatus.PUBLISHED,
+            translations__language_code=get_language(),
+        ).values('uuid').annotate(title=F('translations__title'))

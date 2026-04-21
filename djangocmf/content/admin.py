@@ -20,11 +20,14 @@ from django.utils.translation import gettext_lazy as _
 
 from djangocmf import cmfadmin
 from djangocmf.cmfadmin.admin import CMFModelAdmin
+from djangocmf.cmfadmin.fields import IndentedModelChoiceField
 from djangocmf.cmfadmin.options import CMFStackedInline, CMFTabularInline
-from djangocmf.cmfadmin.templatetags.cmf_tags import icon
+from djangocmf.cmfadmin.templatetags.cmf_admin_tags import icon
+from djangocmf.cmfadmin.widgets import CMFSelect
 from djangocmf.content.enums import ArticleStatus, ArticleType, ArticleSubmitAction
 from djangocmf.content.models import Article, ArticleResource, ArticleTranslation, Page, Category
 from djangocmf.content.service.article import ArticleService
+from djangocmf.content.service.category import CategoryService
 
 
 @cmfadmin.register(Category)
@@ -33,12 +36,27 @@ class CategoryAdmin(CMFModelAdmin):
     list_display = ['sort_order', 'name', 'parent', 'is_active']
     list_display_links = ['name']
     list_editable = ['is_active', 'sort_order']
-    search_fields = ['name']  # 这行之前被我删掉了
+    search_fields = ['name']
     fieldsets = [
         (None, {'fields': ['parent', ('sort_order', 'template', 'is_active')]}),
         (_('Content'), {'fields': ['name', 'description']}),
         (_('SEO'), {'fields': ['meta_title', 'meta_keywords', 'meta_description'], 'classes': ['collapse']}),
     ]
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'parent':
+            obj_id = request.resolver_match.kwargs.get('object_id') if request.resolver_match else None
+            exclude_id = int(obj_id) if obj_id else None  # type: ignore[arg-type]
+            items = CategoryService.get_items(exclude_id=exclude_id)
+            return IndentedModelChoiceField(
+                pairs=items,
+                queryset=Category.objects.exclude(pk=exclude_id) if exclude_id else Category.objects.all(),
+                widget=CMFSelect(),
+                label=Category._meta.get_field('parent').verbose_name,  # type: ignore[union-attr]
+                required=False,
+                empty_label=_('Top Level'),
+            )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class ArticleResourceInline(CMFTabularInline):
@@ -51,11 +69,14 @@ class ArticleResourceInline(CMFTabularInline):
 class ArticleTranslationInline(CMFStackedInline):
     model = ArticleTranslation
     extra = 0
-    max_num = len(settings.LANGUAGES)
     template = 'content/edit_inline/translation_tabs.html'
-    fields = ['language_code', 'title', 'subtitle', 'summary', 'content',
-              'meta_title', 'meta_description', 'meta_keywords']
+    fields = ['language_code', 'title', 'subtitle', 'summary', 'content', 'meta_title',
+              'meta_description', 'meta_keywords']
     rich_text_fields = ['content']
+
+    def get_max_num(self, request, obj=None, **kwargs):
+        """Hook for customizing the max number of extra inline forms."""
+        return len(settings.LANGUAGES) if settings.USE_I18N else 1
 
     def get_queryset(self, request):
         """
@@ -72,6 +93,12 @@ class ArticleTranslationInline(CMFStackedInline):
                 output_field=IntegerField()
             )
         ).order_by('is_default')
+
+    def get_fields(self, request, obj=None):
+        fields = list(super().get_fields(request, obj))
+        if not settings.USE_I18N:
+            fields = [f for f in fields if f != 'language_code']
+        return fields
 
 
 @cmfadmin.register(Article)
@@ -200,8 +227,8 @@ class PageAdmin(ArticleAdmin):
     No categories; slug required for URL routing.
     """
     menu_order = 2000
-    fields = ['slug', 'cover', 'template', 'sort_order', 'extra']
-    list_display = ['get_title', 'slug', 'status_display', 'published_at']
+    fields = ['cover', 'template', 'sort_order', 'extra']
+    list_display = ['get_title', 'status_display', 'published_at']
 
     @admin.display(description=_('status'))
     def status_display(self, obj):

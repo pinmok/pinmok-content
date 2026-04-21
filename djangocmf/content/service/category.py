@@ -24,6 +24,7 @@ class CategoryNode(TreeNode["CategoryNode"]):
     """Tree node representation of a Category."""
     sort_order: int = 0
     name: str = ""
+    uuid: str = ""
 
 
 class CategoryService:
@@ -43,11 +44,12 @@ class CategoryService:
         Falls back to the first available translation if the current language
         is not found.
         """
-        categories = Category.objects.values('id', 'parent_id', 'sort_order', 'name')
+        categories = Category.objects.values('id', 'parent_id', 'uuid', 'sort_order', 'name')
         return [
             CategoryNode(
                 id=cat['id'],
                 parent_id=cat['parent_id'],
+                uuid=cat['uuid'],
                 sort_order=cat['sort_order'],
                 name=cat['name'],
             )
@@ -55,7 +57,7 @@ class CategoryService:
         ]
 
     @classmethod
-    def get_items(cls) -> list[tuple[CategoryNode, str]]:
+    def get_items(cls, exclude_id: int | str | None = None) -> list[tuple[CategoryNode, str]]:
         """
         Return categories flattened in DFS pre-order with indented labels.
 
@@ -65,6 +67,7 @@ class CategoryService:
         return CategoryNode.flatten_with_indent(
             cls._load_nodes(),
             label_func=lambda n: n.name,
+            exclude_id=exclude_id,
             sort_key='sort_order',
         )
 

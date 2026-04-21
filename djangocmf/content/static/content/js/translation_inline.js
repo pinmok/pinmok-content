@@ -80,6 +80,12 @@
     function syncAddBtn() {
         const addBtnLi = document.getElementById('translation-add-tab');
         if (!addBtnLi) return;
+
+        if (nav.dataset.useI18n === 'false') {
+            addBtnLi.style.display = 'none';
+            return;
+        }
+
         const totalForms = document.getElementById('id_' + PREFIX + '-TOTAL_FORMS');
         if (!totalForms) return;
         addBtnLi.style.display = parseInt(totalForms.value) >= getMaxNum() ? 'none' : '';
@@ -195,12 +201,14 @@
 
         let firstTab = null;
         group.querySelectorAll('.inline-related:not(.empty-form)').forEach(function (row) {
-            const index   = parseInt(row.id.split('-').pop());
-            const hasData = row.classList.contains('has_original');
-            const label   = getLabel(index);
+            const index     = parseInt(row.id.split('-').pop());
+            const hasData   = row.classList.contains('has_original');
+            const label     = getLabel(index);
+            const useI18n   = nav.dataset.useI18n === 'true';
+            const deletable = useI18n && !hasData;
 
             const addBtnLi = document.getElementById('translation-add-tab');
-            const li       = createTabItem(index, label, !hasData);
+            const li       = createTabItem(index, label, deletable);
             nav.insertBefore(li, addBtnLi);
             bindTabEvents(li);
             bindLabelSync(index);

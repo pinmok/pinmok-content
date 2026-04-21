@@ -1,5 +1,5 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_modify static cmf_tags content_tags %}
+{% load i18n admin_modify static cmf_admin_tags content_tags %}
 
 {% block extrastyle %}{{ block.super }}
     <link rel="stylesheet" href="{% static 'content/css/article.css' %}">
@@ -15,11 +15,13 @@
                         data-bs-toggle="tabs"
                         data-use-i18n="{{ USE_I18N|yesno:'true,false' }}"
                         role="tablist">
-                        <li class="nav-item" id="translation-add-tab">
-                            <a class="nav-link text-success btn" id="translation-add-btn">
-                                {% icon 'tabler-plus' 'icon icon-sm' %}{% translate 'Add translation' %}
-                            </a>
-                        </li>
+                        {% if USE_I18N %}
+                            <li class="nav-item" id="translation-add-tab">
+                                <a class="nav-link text-success btn" id="translation-add-btn">
+                                    {% icon 'tabler-plus' 'icon icon-sm' %}{% translate 'Add translation' %}
+                                </a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </div>
                 <div class="card-body">

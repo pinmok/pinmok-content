@@ -1,0 +1,35 @@
+{% if show %}
+    <ul class="{{ ul_class }}">
+        <li class="{{ item_class }}{% if not has_previous %} {{ disabled_class }}{% endif %}">
+            {% if has_previous %}
+                <a class="{{ link_class }}" href="?page={{ previous_page }}">{{ prev_label }}</a>
+            {% else %}
+                <span class="{{ link_class }}">{{ prev_label }}</span>
+            {% endif %}
+        </li>
+
+        {% for page_num in page_range %}
+            {% if page_num is None %}
+                <li class="{{ item_class }} {{ disabled_class }}">
+                    <span class="{{ link_class }}">{{ ellipsis_text }}</span>
+                </li>
+            {% elif page_num == current_page %}
+                <li class="{{ item_class }} {{ active_class }}">
+                    <span class="{{ link_class }}">{{ page_num }}</span>
+                </li>
+            {% else %}
+                <li class="{{ item_class }}">
+                    <a class="{{ link_class }}" href="?page={{ page_num }}">{{ page_num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        <li class="{{ item_class }}{% if not has_next %} {{ disabled_class }}{% endif %}">
+            {% if has_next %}
+                <a class="{{ link_class }}" href="?page={{ next_page }}">{{ next_label }}</a>
+            {% else %}
+                <span class="{{ link_class }}">{{ next_label }}</span>
+            {% endif %}
+        </li>
+    </ul>
+{% endif %}

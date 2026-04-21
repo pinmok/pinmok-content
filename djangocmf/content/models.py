@@ -21,14 +21,6 @@ from djangocmf.content.enums import ArticleStatus, ArticleType, Usage
 from djangocmf.core.constants import DEFAULT_SORT_ORDER
 
 
-def generate_uuid_hex():
-    """
-    Django migration cannot serialize lambda functions as default values.
-    A named function is required so the migration writer can reference it by import path.
-    """
-    return uuid.uuid4().hex
-
-
 class Category(models.Model):
     """ Article category """
     parent = models.ForeignKey(
@@ -38,6 +30,12 @@ class Category(models.Model):
         on_delete=models.SET_NULL,
         verbose_name=_('parent category'),
         related_name='children',
+    )
+    uuid = models.UUIDField(
+        _('UUID'),
+        max_length=32,
+        unique=True,
+        default=uuid.uuid4
     )
     template = models.CharField(
         _('template'),
@@ -88,7 +86,7 @@ class Category(models.Model):
         ordering = ['sort_order', 'id']
 
     def __str__(self):
-        return f"{_('category')}: {self.name}"
+        return f"{self.name}"
 
 
 class Article(models.Model):
@@ -102,11 +100,11 @@ class Article(models.Model):
         related_name='articles',
         verbose_name=_('categories')
     )
-    article_uuid = models.CharField(
+    uuid = models.UUIDField(
         _('UUID'),
         max_length=32,
         unique=True,
-        default=generate_uuid_hex
+        default=uuid.uuid4
     )
     type = models.CharField(
         _('type'),
@@ -119,14 +117,6 @@ class Article(models.Model):
         max_length=255,
         blank=True,
         default=''
-    )
-    slug = models.CharField(
-        _('slug'),
-        max_length=255,
-        blank=True,
-        default='',
-        db_index=True,
-        help_text=_('URL path for direct access (pages only).')
     )
     cover = models.ImageField(
         _('cover image'),
@@ -182,7 +172,7 @@ class Article(models.Model):
     def __str__(self):
         # Try to return the default-language title, fall back to UUID
         translation = self.get_translation()
-        return translation.title if translation and translation.title else f'Article({self.article_uuid})'
+        return translation.title if translation and translation.title else f'Article({self.uuid})'
 
     def get_translation(self, language_code=None):
         """
@@ -196,6 +186,9 @@ class Article(models.Model):
         if result is None:
             result = next(iter(translations), None)
         return result
+
+    # Dynamically attached by content_tags._attach_translation()
+    translation: ArticleTranslation | None
 
 
 class ArticleTranslation(models.Model):
