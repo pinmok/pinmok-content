@@ -10,6 +10,8 @@ Author:
 Created:
   2026/01/21
 """
+from enum import StrEnum
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -61,3 +63,10 @@ class Usage(models.TextChoices):
     ATTACHMENT = 'attachment', _('Attachment')
     VIDEO = 'video', _('Video')
     AUDIO = 'audio', _('Audio')
+
+
+class TemplateAction(StrEnum):
+    INDEX = 'index'
+    LIST = 'list'
+    ARTICLE = 'article'
+    PAGE = 'page'

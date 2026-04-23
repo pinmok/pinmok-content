@@ -72,9 +72,9 @@ def _attach_translation(article):
 
 @register.simple_tag(name='articles')
 def articles_tag(
-        cat: str | None = None,
+        category: str | None = None,
         page_num: int = 1,
-        size: int = 10,
+        limit: int = 10,
         top: bool = False,
         recommended: bool = False,
 ) -> Page:
@@ -82,11 +82,10 @@ def articles_tag(
     Return a paginated Page object of published articles.
 
     Args:
-        cat:    Category UUID to filter by. Accepts a single UUID string.
+        category:    Category UUID to filter by. Accepts a single UUID string.
                      Pass None to return articles from all categories.
-                     TODO: resolve named variables from theme config.
-        page_num:        Page number (1-based).
-        size:        Number of articles per page.
+        page_num:    Page number (1-based).
+        limit:       Number of articles per page.
         top:         If truthy, return only is_top articles.
         recommended: If truthy, return only is_recommended articles.
 
@@ -97,11 +96,11 @@ def articles_tag(
             {{ article.translation.title }}
         {% endfor %}
     """
-    category_uuids = [cat] if cat else None
+    category_uuids = [category] if isinstance(category, str) else category or None
     article_page = ArticleFrontendService.get_article_list(
         category_uuids=category_uuids,
         page_number=page_num,
-        page_size=int(size),
+        page_size=int(limit),
         top_only=top,
         recommended_only=recommended,
     )

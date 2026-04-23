@@ -24,7 +24,7 @@ from djangocmf.cmfadmin.fields import IndentedModelChoiceField
 from djangocmf.cmfadmin.options import CMFStackedInline, CMFTabularInline
 from djangocmf.cmfadmin.templatetags.cmf_admin_tags import icon
 from djangocmf.cmfadmin.widgets import CMFSelect
-from djangocmf.content.enums import ArticleStatus, ArticleType, ArticleSubmitAction
+from djangocmf.content.enums import ArticleStatus, ArticleType, ArticleSubmitAction, TemplateAction
 from djangocmf.content.models import Article, ArticleResource, ArticleTranslation, Page, Category
 from djangocmf.content.service.article import ArticleService
 from djangocmf.content.service.category import CategoryService
@@ -38,9 +38,16 @@ class CategoryAdmin(CMFModelAdmin):
     list_editable = ['is_active', 'sort_order']
     search_fields = ['name']
     fieldsets = [
-        (None, {'fields': ['parent', ('sort_order', 'template', 'is_active')]}),
-        (_('Content'), {'fields': ['name', 'description']}),
-        (_('SEO'), {'fields': ['meta_title', 'meta_keywords', 'meta_description'], 'classes': ['collapse']}),
+        (None, {'fields': [
+            ('name', 'template'),
+            'description',
+            ('parent', 'sort_order', 'is_active'),
+        ]}),
+        (_('SEO'), {'fields': [
+            'meta_title',
+            'meta_keywords',
+            'meta_description'
+        ], 'classes': ['collapse']}),
     ]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -57,6 +64,11 @@ class CategoryAdmin(CMFModelAdmin):
                 empty_label=_('Top Level'),
             )
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == 'template':
+            kwargs['widget'] = CMFSelect(choices=self._get_template_choices(TemplateAction.LIST))
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 
 class ArticleResourceInline(CMFTabularInline):
@@ -218,6 +230,11 @@ class ArticleAdmin(CMFModelAdmin):
                 obj.status = current_status
 
         super().save_model(request, obj, form, change)
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name == 'template':
+            kwargs['widget'] = CMFSelect(choices=self._get_template_choices(TemplateAction.ARTICLE))
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 
 @cmfadmin.register(Page)

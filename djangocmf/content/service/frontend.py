@@ -35,19 +35,30 @@ class ArticleFrontendService:
     """
 
     @classmethod
-    def _base_qs(cls) -> QuerySet:
-        """Base queryset: published articles only, with translations prefetched."""
+    def _translation_prefetch(cls, defer_content: bool = False) -> Prefetch:
+        """
+        Build a Prefetch object for article translations filtered to the current language.
+
+        Args:
+            defer_content: If True, defer the content field to reduce data transfer.
+                           Use this for list views where article body is not needed.
+        """
         lang = get_language()
+        qs = ArticleTranslation.objects.filter(language_code=lang)
+        if defer_content:
+            qs = qs.defer('content')
+        return Prefetch('translations', queryset=qs, to_attr='_current_translations')
+
+    @classmethod
+    def _base_qs(cls) -> QuerySet:
+        """
+        Base queryset for detail views: published articles with full translations.
+        Includes content field. Use for single article/page retrieval.
+        """
         return (
             Article.objects
             .filter(status=ArticleStatus.PUBLISHED)
-            .prefetch_related(
-                Prefetch(
-                    'translations',
-                    queryset=ArticleTranslation.objects.filter(language_code=lang),
-                    to_attr='_current_translations',
-                )
-            )
+            .prefetch_related(cls._translation_prefetch())
         )
 
     @classmethod
@@ -91,23 +102,30 @@ class ArticleFrontendService:
             page_size: int = 10,
             top_only: bool = False,
             recommended_only: bool = False,
+            order_by: list[str] = None,
     ) -> Page:
         """
         Return a paginated list of published articles.
+        Defers translation content field since list views do not render article body.
 
         Args:
-            category_uuids: Filter by one or more category UUIDs (OR logic).
-                            Pass None or empty list to skip category filtering.
-            page_number:    1-based page index.
-            page_size:      Number of items per page.
-            top_only:       If True, return only is_top articles.
+            category_uuids:   Filter by one or more category UUIDs (OR logic).
+                              Pass None or empty list to skip category filtering.
+            page_number:      1-based page index.
+            page_size:        Number of items per page.
+            top_only:         If True, return only is_top articles.
             recommended_only: If True, return only is_recommended articles.
+            order_by:         Order articles by this field.
 
         Returns:
             A Django Page object. Access .object_list for the current page's
             articles, and use page.paginator.num_pages etc. for pagination info.
         """
-        qs = cls._base_qs().exclude(type=ArticleType.PAGE)
+        qs = (
+            Article.objects
+            .filter(status=ArticleStatus.PUBLISHED, type=ArticleType.ARTICLE)
+            .prefetch_related(cls._translation_prefetch(defer_content=True))
+        )
 
         if category_uuids:
             qs = qs.filter(categories__uuid__in=category_uuids).distinct()
@@ -118,23 +136,11 @@ class ArticleFrontendService:
         if recommended_only:
             qs = qs.filter(is_recommended=True)
 
-        qs = qs.order_by('-is_top', '-published_at')
+        order_by = order_by or ['-published_at']
+        qs = qs.order_by(*order_by)
 
         paginator = Paginator(qs, page_size)
         return paginator.get_page(page_number)
-
-    @classmethod
-    def get_top_articles(cls, limit: int = 5) -> QuerySet:
-        """
-        Return the most recent top-pinned published articles.
-        Not paginated; intended for sidebar/featured slots.
-        """
-        return (
-            cls._base_qs()
-            .exclude(type=ArticleType.PAGE)
-            .filter(is_top=True)
-            .order_by('-published_at')[:limit]
-        )
 
     @classmethod
     def get_page_list(cls) -> QuerySet:
@@ -146,19 +152,6 @@ class ArticleFrontendService:
             cls._base_qs()
             .filter(type=ArticleType.PAGE)
             .order_by('sort_order', 'published_at')
-        )
-
-    @classmethod
-    def get_recommended_articles(cls, limit: int = 10) -> QuerySet:
-        """
-        Return the most recent recommended published articles.
-        Not paginated; intended for homepage recommendation blocks.
-        """
-        return (
-            cls._base_qs()
-            .exclude(type=ArticleType.PAGE)
-            .filter(is_recommended=True)
-            .order_by('-published_at')[:limit]
         )
 
 

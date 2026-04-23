@@ -13,11 +13,26 @@ Author:
 Created:
   2026-04-10
 """
+from uuid import UUID
+
 from django.http import Http404
 from django.shortcuts import render
 from django.utils.translation import gettext as _
 
+from djangocmf.cmfadmin.service.theme import ThemeService
+from djangocmf.content.enums import TemplateAction
 from djangocmf.content.service.frontend import ArticleFrontendService, CategoryFrontendService
+
+
+def _theme_render(request, action: TemplateAction, filename: str, context: dict = None):
+    """Resolve template path, inject theme vars, and render."""
+    template_path = ThemeService.get_template_path(filename)
+    if template_path is None:
+        raise Http404(_('No active theme.'))
+    ctx = ThemeService.get_vars_context(action)
+    if context:
+        ctx.update(context)
+    return render(request, template_path, ctx)
 
 
 def index_view(request):
@@ -28,11 +43,10 @@ def index_view(request):
     Users who need a custom homepage should define their own view at
     the empty path before including content.urls.
     """
-    # TODO: replace with ThemeService.resolve_template('content.index')
-    return render(request, 'themes/default/index.html')
+    return _theme_render(request, TemplateAction.INDEX, TemplateAction.INDEX)
 
 
-def category_list_view(request, uuid):
+def category_list_view(request, uuid: UUID):
     """
     Article list view for a specific category.
     Reads ?page= from query string for pagination.
@@ -41,16 +55,14 @@ def category_list_view(request, uuid):
     if category is None:
         raise Http404(_('Category not found.'))
 
-    page_number = request.GET.get('page', 1)
-    article_page = ArticleFrontendService.get_article_list(
+    page_number = int(request.GET.get('page', 1))
+    articles = ArticleFrontendService.get_article_list(
         category_uuids=[uuid],
         page_number=page_number,
     )
-
-    # TODO: replace with ThemeService.resolve_template('content.list')
-    return render(request, 'themes/default/list.html', {
+    return _theme_render(request, TemplateAction.LIST, category.template, {
         'category': category,
-        'article_page': article_page,
+        'article_list': articles,
     })
 
 
@@ -62,10 +74,7 @@ def article_detail_view(request, uuid):
     if article is None:
         raise Http404(_('Article not found.'))
 
-    # TODO: replace with ThemeService.resolve_template('content.article')
-    return render(request, 'themes/default/article.html', {
-        'article': article,
-    })
+    return _theme_render(request, TemplateAction.ARTICLE, article.template, {'article': article})
 
 
 def page_detail_view(request, uuid):
@@ -77,8 +86,4 @@ def page_detail_view(request, uuid):
     page = ArticleFrontendService.get_page_by_uuid(uuid)
     if page is None:
         raise Http404(_('Page not found.'))
-
-    # TODO: replace with ThemeService.resolve_template('content.page')
-    return render(request, 'themes/default/page.html', {
-        'page': page,
-    })
+    return _theme_render(request, TemplateAction.PAGE, page.template, {'page': page})

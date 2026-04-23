@@ -17,7 +17,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from djangocmf.cmfadmin.models import Resource
-from djangocmf.content.enums import ArticleStatus, ArticleType, Usage
+from djangocmf.content.enums import ArticleStatus, ArticleType, Usage, TemplateAction
 from djangocmf.core.constants import DEFAULT_SORT_ORDER
 
 
@@ -41,7 +41,7 @@ class Category(models.Model):
         _('template'),
         max_length=255,
         blank=True,
-        default=''
+        default=TemplateAction.LIST
     )
     is_active = models.BooleanField(
         _('is active'),
@@ -116,7 +116,7 @@ class Article(models.Model):
         _('template'),
         max_length=255,
         blank=True,
-        default=''
+        default=TemplateAction.ARTICLE
     )
     cover = models.ImageField(
         _('cover image'),
