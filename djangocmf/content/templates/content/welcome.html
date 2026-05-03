@@ -1,0 +1,304 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>DjangoCMF</title>
+    <link rel="stylesheet" href="{% static 'admin/css/tabler.min.css' %}">
+    <style>
+        .hero {
+            position: relative;
+            padding: 6rem 0 4rem;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background: linear-gradient(135deg,
+            rgba(41, 185, 201, 0.15) 0%,
+            rgba(46, 144, 250, 0.12) 50%,
+            rgba(174, 62, 201, 0.10) 100%
+            );
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(41, 185, 201, 0.2) 0%, transparent 70%);
+            top: -200px;
+            left: -100px;
+            filter: blur(60px);
+        }
+
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(174, 62, 201, 0.2) 0%, transparent 70%);
+            bottom: -150px;
+            right: -50px;
+            filter: blur(60px);
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: var(--tblr-font-weight-black);
+            line-height: 1.2;
+        }
+
+        .hero-description {
+            color: var(--tblr-secondary);
+            font-size: var(--tblr-font-size-h2);
+            line-height: 1.5;
+            max-width: 45rem;
+            margin: 0 auto;
+        }
+
+
+        .feature-card {
+            border: 1px solid var(--tblr-border-color);
+            border-radius: var(--tblr-border-radius-lg);
+            padding: 1.5rem;
+            height: 100%;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--tblr-primary);
+            box-shadow: 0 0 0 3px rgba(var(--tblr-primary-rgb), 0.08);
+        }
+
+        .feature-card p {
+            font-size: 1.1rem;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--tblr-border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .step-number {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--tblr-primary);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <!-- Navbar -->
+    <header class="navbar navbar-expand-md d-print-none">
+        <div class="container-xl">
+            <div class="navbar-brand navbar-brand-autodark pe-0 pe-md-3 mb-0">
+                <a href="/" aria-label="DjangoCMF" class="d-flex align-items-center gap-2 text-reset text-decoration-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" class="navbar-brand-image">
+                        <path fill="#09F" d="M300 600H0V300C0 134 134 0 300 0h300v300c0 166-134 300-300 300z"></path>
+                        <path fill="#FFF" d="M389 345a100 100 0 1 1 0-90l90-44a200 200 0 1 0 0 178l-90-44z"></path>
+                    </svg>
+                    <span class="fw-bold">DjangoCMF</span>
+                </a>
+            </div>
+            <div class="ms-auto">
+                <a href="https://github.com/Django-CMF/DjangoCMF" target="_blank" rel="noopener"
+                   class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">
+                    <svg viewBox="0 0 24 24" width="16" height="16">
+                        <path d="M10.226 17.284c-2.965-.36-5.054-2.493-5.054-5.256 0-1.123.404-2.336 1.078-3.144-.292-.741-.247-2.314.09-2.965.898-.112 2.111.36 2.83 1.01.853-.269 1.752-.404 2.853-.404 1.1 0 1.999.135 2.807.382.696-.629 1.932-1.1 2.83-.988.315.606.36 2.179.067 2.942.72.854 1.101 2 1.101 3.167 0 2.763-2.089 4.852-5.098 5.234.763.494 1.28 1.572 1.28 2.807v2.336c0 .674.561 1.056 1.235.786 4.066-1.55 7.255-5.615 7.255-10.646C23.5 6.188 18.334 1 11.978 1 5.62 1 .5 6.188.5 12.545c0 4.986 3.167 9.12 7.435 10.669.606.225 1.19-.18 1.19-.786V20.63a2.9 2.9 0 0 1-1.078.224c-1.483 0-2.359-.808-2.987-2.313-.247-.607-.517-.966-1.034-1.033-.27-.023-.359-.135-.359-.27 0-.27.45-.471.898-.471.652 0 1.213.404 1.797 1.235.45.651.921.943 1.483.943.561 0 .92-.202 1.437-.719.382-.381.674-.718.944-.943"></path>
+                    </svg>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-wrapper">
+
+        <!-- Hero -->
+        <div class="hero">
+            <div class="hero-bg"></div>
+            <div class="container-xl text-center">
+                <h1 class="hero-title">{% translate "Build faster. Ship sooner. Stay in control." %}</h1>
+                <p class="hero-description mt-4">
+                    {% blocktranslate trimmed %}
+                        DjangoCMF handles the repetitive parts of every project — menus, permissions, themes, content — so you can focus on
+                        what actually makes your product different.
+                    {% endblocktranslate %}
+                </p>
+                <div class="my-5">
+                    <div class="row g-3 justify-content-center">
+                        <div class="col-auto">
+                            <a href="/admin/" class="btn btn-lg btn-primary">{% translate "Go to Admin Panel" %}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-xl">
+            <!-- Next Steps -->
+            <div class="card mb-5">
+                <div class="card-header">
+                    <h3 class="card-title">{% translate "Next Steps" %}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="d-flex gap-3">
+                                <div class="step-number">1</div>
+                                <div>
+                                    <div class="fw-semibold mb-1">{% translate "Make it yours" %}</div>
+                                    <p class="text-secondary mb-0">
+                                        {% translate "Head to Template Management and install a theme. Your site, your look." %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex gap-3">
+                                <div class="step-number">2</div>
+                                <div>
+                                    <div class="fw-semibold mb-1">{% translate "Set the basics" %}</div>
+                                    <p class="text-secondary mb-0">
+                                        {% translate "Configure your site name, logo, and contact info in Site Settings. Takes two minutes." %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex gap-3">
+                                <div class="step-number">3</div>
+                                <div>
+                                    <div class="fw-semibold mb-1">{% translate "Start publishing" %}</div>
+                                    <p class="text-secondary mb-0">
+                                        {% translate "Create categories, write articles, build pages. Everything you need is already there." %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-primary-subtle text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M4 13a8 8 0 0 1 7 7a6 6 0 0 0 3 -5a9 9 0 0 0 6 -8a3 3 0 0 0 -3 -3a9 9 0 0 0 -8 6a6 6 0 0 0 -5 3"></path>
+                                <path d="M7 14a6 6 0 0 0 -3 6a6 6 0 0 0 6 -3"></path>
+                                <path d="M14 9a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                            </svg>
+                        </div>
+                        <h2 class="h2">{% translate "Up and running in minutes" %}</h2>
+                        <p class="text-secondary mb-0">
+                            {% blocktranslate trimmed %}
+                                No boilerplate, no guesswork. A conventional project structure means you write your first feature on day
+                                one, not after a week of setup.
+                            {% endblocktranslate %}
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-success-subtle text-success">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                 class="icon icon-tabler icons-tabler-outline icon-tabler-puzzle">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M4 7h3a1 1 0 0 0 1 -1v-1a2 2 0 0 1 4 0v1a1 1 0 0 0 1 1h3a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h1a2 2 0 0 1 0 4h-1a1 1 0 0 0 -1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-1a2 2 0 0 0 -4 0v1a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h1a2 2 0 0 0 0 -4h-1a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1"></path>
+                            </svg>
+                        </div>
+                        <h2 class="h2">{% translate "Grows with your project" %}</h2>
+                        <p class="text-secondary mb-0">
+                            {% blocktranslate trimmed %}
+                                Enable only what you need. Every feature is self-contained and replaceable — scale from a simple blog to a
+                                full-featured platform without rethinking your architecture.
+                            {% endblocktranslate %}
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-warning-subtle text-warning">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                 class="icon icon-tabler icons-tabler-outline icon-tabler-world">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+                                <path d="M3.6 9h16.8"></path>
+                                <path d="M3.6 15h16.8"></path>
+                                <path d="M11.5 3a17 17 0 0 0 0 18"></path>
+                                <path d="M12.5 3a17 17 0 0 1 0 18"></path>
+                            </svg>
+                        </div>
+                        <h2 class="h2">{% translate "Ready for a global audience" %}</h2>
+                        <p class="text-secondary mb-0">
+                            {% blocktranslate trimmed %}
+                                Multilingual content and interface support is built in from day one. Reaching new markets doesn't mean
+                                rewriting your codebase.
+                            {% endblocktranslate %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer footer-transparent d-print-none">
+        <div class="container-xl">
+            <div class="row text-center align-items-center flex-row-reverse">
+                <div class="col-lg-auto ms-lg-auto">
+                    <ul class="list-inline list-inline-dots mb-0">
+                        <li class="list-inline-item">
+                            <a href="https://opensource.org/license/MIT" class="link-secondary" target="_blank">
+                                {% translate "License" %}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+                    <ul class="list-inline list-inline-dots mb-0">
+                        <li class="list-inline-item">
+                            Copyright &copy; 2025&ndash;{% now "Y" %}
+                            <a href="https://www.qdcrazy.cn" class="link-secondary" target="_blank">DjangoCMF</a>.
+                            {% translate "All rights reserved." %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+<script src="{% static 'admin/js/tabler.min.js' %}"></script>
+</body>
+</html>

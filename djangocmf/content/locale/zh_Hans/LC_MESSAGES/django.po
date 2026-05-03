@@ -1,0 +1,342 @@
+# DjangoCMF Simplified Chinese Translation
+# Copyright (C) 2026 惠达浪
+# This file is distributed under the same license as the DjangoCMF package.
+# 惠达浪 <crazys@126.com>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: djangocmf content 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-03 21:31+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: 惠达浪 <crazys@126.com>\n"
+"Language-Team: 惠达浪 <crazys@126.com>\n"
+"Language: zh-cn\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: .\djangocmf\content\admin.py:152 .\djangocmf\content\models.py:67
+#: .\djangocmf\content\models.py:83
+msgid "categories"
+msgstr "分类"
+
+#: .\djangocmf\content\admin.py:222
+msgid "You do not have permission to publish articles."
+msgstr "你没有发布文章的权限。"
+
+#: .\djangocmf\content\apps.py:20
+msgid "Content Management"
+msgstr "内容管理"
+
+#: .\djangocmf\content\datasource.py:25
+msgid "Select Category"
+msgstr "选择分类"
+
+#: .\djangocmf\content\datasource.py:48
+msgid "Select Page"
+msgstr "选择单页"
+
+#: .\djangocmf\content\enums.py:20
+msgid "Draft"
+msgstr "草稿"
+
+#: .\djangocmf\content\enums.py:21
+msgid "Pending"
+msgstr "待审核"
+
+#: .\djangocmf\content\enums.py:22
+msgid "Returned"
+msgstr "已退回"
+
+#: .\djangocmf\content\enums.py:23
+msgid "Published"
+msgstr "已发布"
+
+#: .\djangocmf\content\enums.py:24
+msgid "Deleted"
+msgstr "已删除"
+
+#: .\djangocmf\content\enums.py:39
+msgid "Submit for review"
+msgstr "提交审核"
+
+#: .\djangocmf\content\enums.py:40
+msgid "Publish"
+msgstr "发布"
+
+#: .\djangocmf\content\enums.py:41
+msgid "Return"
+msgstr "退回"
+
+#: .\djangocmf\content\enums.py:42
+msgid "Retract"
+msgstr "撤回"
+
+#: .\djangocmf\content\enums.py:57
+msgid "Article"
+msgstr "文章"
+
+#: .\djangocmf\content\enums.py:58
+msgid "Page"
+msgstr "单页"
+
+#: .\djangocmf\content\enums.py:62
+msgid "Gallery"
+msgstr "相册"
+
+#: .\djangocmf\content\enums.py:63
+msgid "Attachment"
+msgstr "附件"
+
+#: .\djangocmf\content\enums.py:64
+msgid "Video"
+msgstr "视频"
+
+#: .\djangocmf\content\enums.py:65
+msgid "Audio"
+msgstr "音频"
+
+#: .\djangocmf\content\models.py:31
+msgid "parent category"
+msgstr "上级分类"
+
+#: .\djangocmf\content\models.py:41 .\djangocmf\content\models.py:98
+msgid "template"
+msgstr "模板"
+
+#: .\djangocmf\content\models.py:47
+msgid "is active"
+msgstr "是否启用"
+
+#: .\djangocmf\content\models.py:51 .\djangocmf\content\models.py:115
+#: .\djangocmf\content\models.py:288
+msgid "sort order"
+msgstr "排序"
+
+#: .\djangocmf\content\models.py:55
+msgid "category name"
+msgstr "类别名称"
+
+#: .\djangocmf\content\models.py:59
+msgid "description"
+msgstr "描述"
+
+#: .\djangocmf\content\models.py:66
+msgid "category"
+msgstr "分类"
+
+#: .\djangocmf\content\models.py:92
+msgid "type"
+msgstr "类型"
+
+#: .\djangocmf\content\models.py:104
+msgid "cover image"
+msgstr "封面图片"
+
+#: .\djangocmf\content\models.py:119
+msgid "extra"
+msgstr "附加信息"
+
+#: .\djangocmf\content\models.py:124
+msgid "is top"
+msgstr "置顶"
+
+#: .\djangocmf\content\models.py:128
+msgid "recommended"
+msgstr "推荐"
+
+#: .\djangocmf\content\models.py:132
+msgid "published at"
+msgstr "发布时间"
+
+#: .\djangocmf\content\models.py:137
+msgid "created at"
+msgstr "创建时间"
+
+#: .\djangocmf\content\models.py:141
+msgid "updated at"
+msgstr "更新时间"
+
+#: .\djangocmf\content\models.py:146 .\djangocmf\content\models.py:185
+#: .\djangocmf\content\models.py:269
+msgid "article"
+msgstr "文章"
+
+#: .\djangocmf\content\models.py:147
+msgid "articles"
+msgstr "文章"
+
+#: .\djangocmf\content\models.py:188
+msgid "language"
+msgstr "语言"
+
+#: .\djangocmf\content\models.py:194
+msgid "title"
+msgstr "标题"
+
+#: .\djangocmf\content\models.py:199
+msgid "subtitle"
+msgstr "副标题"
+
+#: .\djangocmf\content\models.py:205
+msgid "summary"
+msgstr "摘要"
+
+#: .\djangocmf\content\models.py:205
+msgid "content"
+msgstr "内容"
+
+#: .\djangocmf\content\models.py:234
+msgid "article translation"
+msgstr "文章翻译"
+
+#: .\djangocmf\content\models.py:235
+msgid "article translations"
+msgstr "文章翻译"
+
+#: .\djangocmf\content\models.py:251
+msgid "page"
+msgstr "单页"
+
+#: .\djangocmf\content\models.py:252
+msgid "pages"
+msgstr "单页"
+
+#: .\djangocmf\content\models.py:275
+msgid "resource"
+msgstr "资源"
+
+#: .\djangocmf\content\models.py:278
+msgid "usage"
+msgstr "用途"
+
+#: .\djangocmf\content\models.py:283
+msgid "alternative text"
+msgstr "替代文本"
+
+#: .\djangocmf\content\models.py:293
+msgid "article resource"
+msgstr "文章资源"
+
+#: .\djangocmf\content\models.py:294
+msgid "article resources"
+msgstr "文章资源"
+
+#: .\djangocmf\content\service\article.py:47
+#, python-format
+msgid "Invalid status transition: %(from)s → %(to)s"
+msgstr "状态变更不允许： %(from)s → %(to)s"
+
+#: .\djangocmf\content\templates\content\articles.html:21
+msgid "Add translation"
+msgstr "添加翻译"
+
+#: .\djangocmf\content\templates\content\edit_inline\translation_tabs.html:28
+msgid "Check this box and submit to delete the article in the current language."
+msgstr "勾选此项并提交，即可删除当前语言版本的文章。"
+
+#: .\djangocmf\content\templates\content\submit_line.html:12
+msgid "Back"
+msgstr "返回"
+
+#: .\djangocmf\content\templates\content\welcome.html:146
+msgid "Build faster. Ship sooner. Stay in control."
+msgstr "让开发更高效，让上线更从容，让一切尽在掌握。"
+
+#: .\djangocmf\content\templates\content\welcome.html:148
+msgid ""
+"DjangoCMF handles the repetitive parts of every project — menus, "
+"permissions, themes, content — so you can focus on what actually makes your "
+"product different."
+msgstr "那些千篇一律的活，DjangoCMF 替你干了，菜单、权限、主题、内容，一概不用操心，你只需要专注于让产品独一无二的那部分。"
+
+#: .\djangocmf\content\templates\content\welcome.html:156
+msgid "Go to Admin Panel"
+msgstr "进入后台管理"
+
+#: .\djangocmf\content\templates\content\welcome.html:167
+msgid "Next Steps"
+msgstr "快速开始"
+
+#: .\djangocmf\content\templates\content\welcome.html:175
+msgid "Make it yours"
+msgstr "打造专属于你的应用"
+
+#: .\djangocmf\content\templates\content\welcome.html:177
+msgid "Head to Template Management and install a theme. Your site, your look."
+msgstr "前往模板管理，安装一个主题，即可拥有你自己的网站。"
+
+#: .\djangocmf\content\templates\content\welcome.html:186
+msgid "Set the basics"
+msgstr "进行基础配置"
+
+#: .\djangocmf\content\templates\content\welcome.html:188
+msgid "Configure your site name, logo, and contact info in Site Settings. Takes two minutes."
+msgstr "在站点设置中，设置好名称、Logo和联系方式，两分钟搞定。"
+
+#: .\djangocmf\content\templates\content\welcome.html:197
+msgid "Start publishing"
+msgstr "开始发布内容"
+
+#: .\djangocmf\content\templates\content\welcome.html:199
+msgid ""
+"Create categories, write articles, build pages. Everything you need is "
+"already there."
+msgstr "分类、文章、页面，想要的都有，直接用就行。"
+
+#: .\djangocmf\content\templates\content\welcome.html:221
+msgid "Up and running in minutes"
+msgstr "几分钟内上手"
+
+#: .\djangocmf\content\templates\content\welcome.html:223
+msgid ""
+"No boilerplate, no guesswork. A conventional project structure means you "
+"write your first feature on day one, not after a week of setup."
+msgstr "约定优于配置，开箱即用。第一天就能写业务，不用在环境搭建上浪费时间。"
+
+#: .\djangocmf\content\templates\content\welcome.html:240
+msgid "Grows with your project"
+msgstr "与项目共同成长"
+
+#: .\djangocmf\content\templates\content\welcome.html:242
+msgid ""
+"Enable only what you need. Every feature is self-contained and replaceable —"
+" scale from a simple blog to a full-featured platform without rethinking "
+"your architecture."
+msgstr "按需启用，功能独立可替换，从简单博客到完整平台，架构从不是瓶颈。"
+
+#: .\djangocmf\content\templates\content\welcome.html:263
+msgid "Ready for a global audience"
+msgstr "面向全球用户"
+
+#: .\djangocmf\content\templates\content\welcome.html:265
+msgid ""
+"Multilingual content and interface support is built in from day one. "
+"Reaching new markets doesn't mean rewriting your codebase."
+msgstr "原生支持多语言，开拓国际市场无需多写一行代码。"
+
+#: .\djangocmf\content\templates\content\welcome.html:294
+msgid "All rights reserved."
+msgstr "版权所有"
+
+#: .\djangocmf\content\templatetags\content_tags.py:35
+msgid "New"
+msgstr "新建"
+
+#: .\djangocmf\content\views.py:31
+msgid "No active theme."
+msgstr "没有生效的主题"
+
+#: .\djangocmf\content\views.py:62
+msgid "Category not found."
+msgstr "未找到分类"
+
+#: .\djangocmf\content\views.py:81
+msgid "Article not found."
+msgstr "未找到文章"
+
+#: .\djangocmf\content\views.py:94
+msgid "Page not found."
+msgstr "未找到单页"

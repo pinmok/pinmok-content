@@ -22,7 +22,7 @@ from djangocmf import cmfadmin
 from djangocmf.cmfadmin.admin import CMFModelAdmin
 from djangocmf.cmfadmin.fields import IndentedModelChoiceField
 from djangocmf.cmfadmin.options import CMFStackedInline, CMFTabularInline
-from djangocmf.cmfadmin.templatetags.cmf_admin_tags import icon
+from djangocmf.cmfadmin.templatetags.cmf_tags import icon
 from djangocmf.cmfadmin.widgets import CMFSelect
 from djangocmf.content.enums import ArticleStatus, ArticleType, ArticleSubmitAction, TemplateAction
 from djangocmf.content.models import Article, ArticleResource, ArticleTranslation, Page, Category
@@ -43,11 +43,6 @@ class CategoryAdmin(CMFModelAdmin):
             'description',
             ('parent', 'sort_order', 'is_active'),
         ]}),
-        (_('SEO'), {'fields': [
-            'meta_title',
-            'meta_keywords',
-            'meta_description'
-        ], 'classes': ['collapse']}),
     ]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -82,8 +77,7 @@ class ArticleTranslationInline(CMFStackedInline):
     model = ArticleTranslation
     extra = 0
     template = 'content/edit_inline/translation_tabs.html'
-    fields = ['language_code', 'title', 'subtitle', 'summary', 'content', 'meta_title',
-              'meta_description', 'meta_keywords']
+    fields = ['language_code', 'title', 'subtitle', 'summary', 'content']
     rich_text_fields = ['content']
 
     def get_max_num(self, request, obj=None, **kwargs):

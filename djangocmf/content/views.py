@@ -43,7 +43,13 @@ def index_view(request):
     Users who need a custom homepage should define their own view at
     the empty path before including content.urls.
     """
-    return _theme_render(request, TemplateAction.INDEX, TemplateAction.INDEX)
+    template = ThemeService.get_template_path(TemplateAction.INDEX)
+    if template is None:
+        # No active theme or index template not found, fall back to demo
+        return render(request, 'content/welcome.html')
+
+    ctx = ThemeService.get_vars_context(TemplateAction.INDEX)
+    return render(request, template, ctx)
 
 
 def category_list_view(request, uuid: UUID):

@@ -32,7 +32,7 @@ class Category(models.Model):
         related_name='children',
     )
     uuid = models.UUIDField(
-        _('UUID'),
+        'UUID',
         max_length=32,
         unique=True,
         default=uuid.uuid4
@@ -61,24 +61,6 @@ class Category(models.Model):
         blank=True,
         default=''
     )
-    meta_title = models.CharField(
-        _('meta title'),
-        max_length=255,
-        blank=True,
-        default=''
-    )
-    meta_keywords = models.CharField(
-        _('meta keywords'),
-        max_length=255,
-        blank=True,
-        default=''
-    )
-    meta_description = models.CharField(
-        _('meta description'),
-        max_length=160,
-        blank=True,
-        default=''
-    )
 
     class Meta:
         verbose_name = _('category')
@@ -101,7 +83,7 @@ class Article(models.Model):
         verbose_name=_('categories')
     )
     uuid = models.UUIDField(
-        _('UUID'),
+        'UUID',
         max_length=32,
         unique=True,
         default=uuid.uuid4
@@ -226,24 +208,6 @@ class ArticleTranslation(models.Model):
     )
     content = models.TextField(
         _('content'),
-        blank=True,
-        default=''
-    )
-    meta_title = models.CharField(
-        _('meta title'),
-        max_length=255,
-        blank=True,
-        default=''
-    )
-    meta_description = models.CharField(
-        _('meta description'),
-        max_length=500,
-        blank=True,
-        default=''
-    )
-    meta_keywords = models.CharField(
-        _('meta keywords'),
-        max_length=255,
         blank=True,
         default=''
     )
