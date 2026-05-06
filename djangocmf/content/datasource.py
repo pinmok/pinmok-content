@@ -22,10 +22,7 @@ from djangocmf.content.service.category import CategoryService
 @datasource.register('category')
 class CategoryDataSource(CMFSelect):
     def __init__(self, attrs=None, multiple=False):
-        choices = [('', _('Select Category'))] + [
-            (node.uuid, label)
-            for node, label in CategoryService.get_items()
-        ]
+        choices = [(node.uuid, label) for node, label in CategoryService.get_items()]
         super().__init__(attrs=attrs, choices=choices)
         self.allow_multiple_selected = multiple
 

@@ -63,7 +63,7 @@ def category_list_view(request, uuid: UUID):
 
     page_number = int(request.GET.get('page', 1))
     articles = ArticleFrontendService.get_article_list(
-        category_uuids=[uuid],
+        category=uuid,
         page_number=page_number,
     )
     return _theme_render(request, TemplateAction.LIST, category.template, {
@@ -72,24 +72,23 @@ def category_list_view(request, uuid: UUID):
     })
 
 
-def article_detail_view(request, uuid):
+def article_detail_view(request, uuid: UUID):
     """
     Single article detail view.
     """
     article = ArticleFrontendService.get_article_by_uuid(uuid)
     if article is None:
         raise Http404(_('Article not found.'))
-
     return _theme_render(request, TemplateAction.ARTICLE, article.template, {'article': article})
 
 
-def page_detail_view(request, uuid):
+def page_detail_view(request, uuid: UUID):
     """
     Single page detail view.
     Pages are articles with type=PAGE, accessed via UUID.
     Clean URLs are handled by the URL alias system.
     """
-    page = ArticleFrontendService.get_page_by_uuid(uuid)
+    page = ArticleFrontendService.get_article_by_uuid(uuid)
     if page is None:
         raise Http404(_('Page not found.'))
     return _theme_render(request, TemplateAction.PAGE, page.template, {'page': page})

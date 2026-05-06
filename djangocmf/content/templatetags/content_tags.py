@@ -11,7 +11,10 @@ Author:
 Created:
   2026/3/25
 """
+from uuid import UUID
+
 from django import template
+from django.core.exceptions import ValidationError
 from django.core.paginator import Page
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
@@ -19,6 +22,7 @@ from django.utils.translation import gettext as _
 from djangocmf.content.enums import ArticleStatus
 from djangocmf.content.models import Article, Category
 from djangocmf.content.service.frontend import ArticleFrontendService, CategoryFrontendService
+from project_settings import settings
 
 register = template.Library()
 
@@ -38,82 +42,70 @@ def ribbon(status: str):
 
 
 # ---------------------------------------------------------------------------
-# Internal helpers
-# ---------------------------------------------------------------------------
-
-def _get_translation(article):
-    """
-    Return the prefetched translation for an article if available,
-    otherwise fall back to Article.get_translation().
-
-    ArticleFrontendService._base_qs() prefetches translations into
-    _current_translations. This helper uses that cache to avoid
-    extra queries when iterating over article lists.
-    """
-    cached = getattr(article, '_current_translations', None)
-    if cached is not None:
-        return cached[0] if cached else None
-    return article.get_translation()
-
-
-def _attach_translation(article):
-    """
-    Attach a `translation` attribute directly onto the article instance
-    so templates can use {{ article.translation.title }} uniformly,
-    regardless of whether prefetch was used.
-    """
-    article.translation = _get_translation(article)
-    return article
-
-
-# ---------------------------------------------------------------------------
 # Tags
 # ---------------------------------------------------------------------------
 
+VALID_ORDER_FIELDS = {
+    'published_at', '-published_at',
+    'created_at', '-created_at',
+    'sort_order', '-sort_order',
+}
+
+
 @register.simple_tag(name='articles')
 def articles_tag(
-        category: str | None = None,
+        category: str | list,
         page_num: int = 1,
-        limit: int = 10,
+        page_size: int = 10,
+        limit: int | None = None,
+        order: str = '-published_at',
         top: bool = False,
         recommended: bool = False,
-) -> Page:
+) -> Page | list:
     """
-    Return a paginated Page object of published articles.
+    Return a paginated Page object or a plain list of published articles.
 
     Args:
-        category:    Category UUID to filter by. Accepts a single UUID string.
-                     Pass None to return articles from all categories.
-        page_num:    Page number (1-based).
-        limit:       Number of articles per page.
-        top:         If truthy, return only is_top articles.
-        recommended: If truthy, return only is_recommended articles.
+        category:    Category UUID to filter by. Pass None for all categories.
+        page_num:    Page number (1-based). Ignored when limit is set.
+        page_size:   Number of articles per page. Ignored when limit is set.
+        limit:       If set, disables pagination and returns a plain list of at most N articles.
+        order:       Sort field. Must be one of: published_at, -published_at, created_at,
+                     -created_at, sort_order, -sort_order. Invalid values fall back to -published_at.
+        top:         If True, return only is_top articles.
+        recommended: If True, return only is_recommended articles.
 
     Usage:
-        {% list as articles %}
-        {% list category=cat_uuid page=current_page size=10 as articles %}
-        {% for article in articles %}
-            {{ article.translation.title }}
-        {% endfor %}
+        {% articles limit=6 as latest %}
+        {% articles limit=4 order='sort_order' as ordered %}
+        {% articles category=uuid page_num=current_page page_size=10 as paged %}
+        {% articles top=True limit=2 as top_articles %}
     """
-    category_uuids = [category] if isinstance(category, str) else category or None
-    article_page = ArticleFrontendService.get_article_list(
-        category_uuids=category_uuids,
+    if order not in VALID_ORDER_FIELDS:
+        order = '-published_at'
+
+    if limit is not None:
+        articles = ArticleFrontendService.get_article_list(
+            category=category,
+            limit=int(limit),
+            order_by=order.split(','),
+            top_only=top,
+            recommended_only=recommended,
+        )
+        return articles
+
+    return ArticleFrontendService.get_article_list(
+        category=category,
         page_number=page_num,
-        page_size=int(limit),
+        page_size=int(page_size),
+        order_by=order.split(','),
         top_only=top,
         recommended_only=recommended,
     )
 
-    # Attach translation to each article to avoid per-item queries in templates
-    for art in article_page.object_list:
-        _attach_translation(art)
-
-    return article_page
-
 
 @register.simple_tag(name='article')
-def article_tag(uuid: str) -> Article | None:
+def article_tag(uuid: UUID) -> Article | None:
     """
     Return a single published article by UUID, or None if not found.
 
@@ -123,14 +115,16 @@ def article_tag(uuid: str) -> Article | None:
             {{ art.translation.title }}
         {% endif %}
     """
-    art = ArticleFrontendService.get_article_by_uuid(uuid)
-    if art:
-        _attach_translation(art)
-    return art
+    try:
+        return ArticleFrontendService.get_article_by_uuid(uuid)
+    except ValidationError as e:
+        if settings.DEBUG:
+            raise e
+        return None
 
 
 @register.simple_tag(name='page')
-def page_tag(uuid: str) -> Article | None:
+def page_tag(uuid: UUID) -> Article | None:
     """
     Return a single published page by UUID, or None if not found.
 
@@ -140,14 +134,16 @@ def page_tag(uuid: str) -> Article | None:
             {{ pg.translation.title }}
         {% endif %}
     """
-    pg = ArticleFrontendService.get_page_by_uuid(uuid)
-    if pg:
-        _attach_translation(pg)
-    return pg
+    try:
+        return ArticleFrontendService.get_article_by_uuid(uuid)
+    except ValidationError as e:
+        if settings.DEBUG:
+            raise e
+        return None
 
 
 @register.simple_tag(name='category')
-def category_tag(uuid: str) -> Category | None:
+def category_tag(uuid: UUID) -> Category | None:
     """
     Return a single active category by UUID, or None if not found.
 
@@ -157,7 +153,12 @@ def category_tag(uuid: str) -> Category | None:
             {{ cat.name }}
         {% endif %}
     """
-    return CategoryFrontendService.get_category_by_uuid(uuid)
+    try:
+        return CategoryFrontendService.get_category_by_uuid(uuid)
+    except ValidationError as e:
+        if settings.DEBUG:
+            raise e
+        return None
 
 
 def _build_page_range(current_page: int, total_pages: int, wing_size: int) -> list[int | None]:

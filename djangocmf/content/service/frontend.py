@@ -16,12 +16,16 @@ Author:
 Created:
   2026-04-10
 """
+from uuid import UUID
+
 from django.core.paginator import Paginator, Page
 from django.db.models import QuerySet, Prefetch
 from django.utils.translation import get_language
 
 from djangocmf.content.enums import ArticleStatus, ArticleType
 from djangocmf.content.models import Article, ArticleTranslation, Category
+
+_TRANSLATION_PREFETCH_NAME = 'current_translations'
 
 
 # ---------------------------------------------------------------------------
@@ -47,7 +51,7 @@ class ArticleFrontendService:
         qs = ArticleTranslation.objects.filter(language_code=lang)
         if defer_content:
             qs = qs.defer('content')
-        return Prefetch('translations', queryset=qs, to_attr='_current_translations')
+        return Prefetch('translations', queryset=qs, to_attr=_TRANSLATION_PREFETCH_NAME)
 
     @classmethod
     def _base_qs(cls) -> QuerySet:
@@ -62,34 +66,34 @@ class ArticleFrontendService:
         )
 
     @classmethod
-    def get_article_by_uuid(cls, uuid) -> Article | None:
+    def _attach_translation(cls, article: Article):
+        """
+        Attach a `translation` attribute and proxy common fields directly onto
+        the article instance so templates can use {{ article.title }} uniformly.
+        """
+        cached = getattr(article, _TRANSLATION_PREFETCH_NAME, None)
+        if cached is not None:
+            translation = cached[0] if isinstance(cached, list) and cached else None
+        else:
+            translation = article.get_translation()
+
+        if translation:
+            # _meta is a Django convention, safe to access directly
+            for field in translation._meta.fields:  # noqa
+                if field.name not in ('id', 'article_id'):
+                    setattr(article, field.name, getattr(translation, field.name))
+        return article
+
+    @classmethod
+    def get_article_by_uuid(cls, uuid: UUID) -> Article | None:
         """
         Return a single published article by UUID, or None if not found.
         Prefetches translations for the current language.
         """
         try:
-            return (
-                cls._base_qs()
-                .filter(uuid=uuid)
-                .exclude(type=ArticleType.PAGE)
-                .get()
-            )
-        except Article.DoesNotExist:
-            return None
-
-    @classmethod
-    def get_page_by_uuid(cls, uuid) -> Article | None:
-        """
-        Return a single published page by UUID, or None if not found.
-        Pages are articles with type=PAGE.
-        Clean URLs are handled by the URL alias system, not slugs.
-        """
-        try:
-            return (
-                cls._base_qs()
-                .filter(uuid=uuid, type=ArticleType.PAGE)
-                .get()
-            )
+            art = cls._base_qs().filter(uuid=uuid).get()
+            cls._attach_translation(art)
+            return art
         except Article.DoesNotExist:
             return None
 
@@ -97,50 +101,70 @@ class ArticleFrontendService:
     def get_article_list(
             cls,
             *,
-            category_uuids: list | None = None,
+            category: str | UUID | list[str],
             page_number: int = 1,
             page_size: int = 10,
+            limit: int | None = None,
             top_only: bool = False,
             recommended_only: bool = False,
-            order_by: list[str] = None,
-    ) -> Page:
+            order_by: list[str] | None = None,
+    ) -> Page | list:
         """
-        Return a paginated list of published articles.
+        Return a paginated list or a plain list of published articles.
         Defers translation content field since list views do not render article body.
 
         Args:
-            category_uuids:   Filter by one or more category UUIDs (OR logic).
+            category:         Filter by one or more category UUIDs (OR logic).
                               Pass None or empty list to skip category filtering.
-            page_number:      1-based page index.
-            page_size:        Number of items per page.
+            page_number:      1-based page index. Ignored when limit is set.
+            page_size:        Number of items per page. Ignored when limit is set.
+            limit:            If set, disables pagination and returns a plain list of at most N articles.
             top_only:         If True, return only is_top articles.
             recommended_only: If True, return only is_recommended articles.
-            order_by:         Order articles by this field.
+            order_by:         List of order fields e.g. ['-published_at']. Defaults to ['-published_at'].
 
         Returns:
-            A Django Page object. Access .object_list for the current page's
-            articles, and use page.paginator.num_pages etc. for pagination info.
+            A plain list when limit is set, otherwise a Django Page object.
         """
+        category_uuids = [category] if not isinstance(category, list) else category
+
         qs = (
             Article.objects
+            # Only return published articles, exclude pages and other types
             .filter(status=ArticleStatus.PUBLISHED, type=ArticleType.ARTICLE)
+            # Prefetch translations for the current language, defer content field for performance
             .prefetch_related(cls._translation_prefetch(defer_content=True))
         )
 
-        if category_uuids:
-            qs = qs.filter(categories__uuid__in=category_uuids).distinct()
+        # Optionally filter by one or more category UUIDs (OR logic)
+        qs = qs.filter(categories__uuid__in=category_uuids).distinct()
 
+        # Optionally filter to top-pinned articles only
         if top_only:
             qs = qs.filter(is_top=True)
 
+        # Optionally filter to recommended articles only
         if recommended_only:
             qs = qs.filter(is_recommended=True)
 
-        order_by = order_by or ['-published_at']
+        # Apply ordering, default to newest published first
+        order_by: list[str] = order_by or ['-published_at']
         qs = qs.order_by(*order_by)
 
-        paginator = Paginator(qs, page_size)
-        return paginator.get_page(page_number)
+        if limit is not None:
+            # limit mode: skip pagination, return a plain list of at most N articles
+            articles = list(qs[:limit])
+        else:
+            # pagination mode: return a Django Page object for the requested page
+            paginator = Paginator(qs, page_size)
+            articles = paginator.get_page(page_number)
+
+        # Proxy translation fields (title, summary, etc.) directly onto each article instance
+        # so templates can use {{ article.title }} instead of {{ article.translation.title }}
+        for art in articles:
+            cls._attach_translation(art)
+
+        return articles
 
     @classmethod
     def get_page_list(cls) -> QuerySet:
@@ -171,7 +195,7 @@ class CategoryFrontendService:
         return Category.objects.filter(is_active=True)
 
     @classmethod
-    def get_category_by_uuid(cls, uuid) -> Category | None:
+    def get_category_by_uuid(cls, uuid: UUID) -> Category | None:
         """Return a single active category by UUID, or None if not found."""
         try:
             return cls._base_qs().get(uuid=uuid)

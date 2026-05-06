@@ -3,6 +3,7 @@
     <div class="d-flex gap-2 align-items-center flex-wrap">
         {% if show_save %}
             <button type="submit" name="_save" class="btn btn-primary">{% trans "Save" %}</button>
+            <button type="submit" class="btn btn-primary" name="_continue">{% translate 'Save and continue editing' %}</button>
         {% endif %}
 
         {% for btn in transition_buttons %}
