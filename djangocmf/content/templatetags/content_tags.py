@@ -26,6 +26,12 @@ from project_settings import settings
 
 register = template.Library()
 
+VALID_ORDER_FIELDS = {
+    'published_at', '-published_at',
+    'created_at', '-created_at',
+    'sort_order', '-sort_order',
+}
+
 
 @register.simple_tag
 def ribbon(status: str):
@@ -39,17 +45,6 @@ def ribbon(status: str):
         label = _('New')
 
     return mark_safe(f'<div class="ribbon {css_class}">{label}</div>')
-
-
-# ---------------------------------------------------------------------------
-# Tags
-# ---------------------------------------------------------------------------
-
-VALID_ORDER_FIELDS = {
-    'published_at', '-published_at',
-    'created_at', '-created_at',
-    'sort_order', '-sort_order',
-}
 
 
 @register.simple_tag(name='articles')
@@ -81,27 +76,59 @@ def articles_tag(
         {% articles category=uuid page_num=current_page page_size=10 as paged %}
         {% articles top=True limit=2 as top_articles %}
     """
+
+    def _to_uuid(val) -> UUID | None:
+        """
+        Normalize a single value to UUID.
+        Accepts: UUID, str (valid UUID format), or any model instance with a uuid attribute.
+        Returns None for invalid or unrecognized input.
+        """
+        if isinstance(val, UUID):
+            return val
+        if hasattr(val, 'uuid'):
+            return val.uuid
+        if isinstance(val, str):
+            try:
+                return UUID(val)
+            except ValueError:
+                return None
+        return None
+
+    def _normalize_uuids(value) -> list[UUID]:
+        """
+        Normalize a single value or list of values to a list of UUIDs.
+        Invalid values are silently dropped.
+        """
+        items = value if isinstance(value, list) else [value]
+        return [u for item in items if (u := _to_uuid(item)) is not None]
+
     if order not in VALID_ORDER_FIELDS:
         order = '-published_at'
 
-    if limit is not None:
-        articles = ArticleFrontendService.get_article_list(
-            category=category,
-            limit=int(limit),
+    category_uuids = _normalize_uuids(category)
+    try:
+        if limit is not None:
+            articles = ArticleFrontendService.get_article_list(
+                category=category_uuids,
+                limit=int(limit),
+                order_by=order.split(','),
+                top_only=top,
+                recommended_only=recommended,
+            )
+            return articles
+
+        return ArticleFrontendService.get_article_list(
+            category=category_uuids,
+            page_number=page_num,
+            page_size=int(page_size),
             order_by=order.split(','),
             top_only=top,
             recommended_only=recommended,
         )
-        return articles
-
-    return ArticleFrontendService.get_article_list(
-        category=category,
-        page_number=page_num,
-        page_size=int(page_size),
-        order_by=order.split(','),
-        top_only=top,
-        recommended_only=recommended,
-    )
+    except ValidationError as e:
+        if settings.DEBUG:
+            raise e
+        return []
 
 
 @register.simple_tag(name='article')
@@ -156,8 +183,6 @@ def category_tag(uuid: UUID) -> Category | None:
     try:
         return CategoryFrontendService.get_category_by_uuid(uuid)
     except ValidationError as e:
-        if settings.DEBUG:
-            raise e
         return None
 
 
@@ -188,7 +213,7 @@ def _build_page_range(current_page: int, total_pages: int, wing_size: int) -> li
     return result
 
 
-@register.inclusion_tag('content/tags/pagination.html')
+@register.inclusion_tag('content/tags/pagination.html', name='pagination')
 def pagination_tag(
         page_obj: Page,
         wing: int = 4,

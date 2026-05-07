@@ -22,7 +22,7 @@ from django.core.paginator import Paginator, Page
 from django.db.models import QuerySet, Prefetch
 from django.utils.translation import get_language
 
-from djangocmf.content.enums import ArticleStatus, ArticleType
+from djangocmf.content.enums import ArticleStatus, ArticleType, Usage
 from djangocmf.content.models import Article, ArticleTranslation, Category
 
 _TRANSLATION_PREFETCH_NAME = 'current_translations'
@@ -91,8 +91,19 @@ class ArticleFrontendService:
         Prefetches translations for the current language.
         """
         try:
-            art = cls._base_qs().filter(uuid=uuid).get()
+            art = (
+                cls._base_qs()
+                .prefetch_related('article_resources__resource')
+                .filter(uuid=uuid)
+                .get()
+            )
             cls._attach_translation(art)
+
+            all_resources = list(art.article_resources.all())
+            art.gallery = [r for r in all_resources if r.usage == Usage.GALLERY]
+            art.attachments = [r for r in all_resources if r.usage == Usage.ATTACHMENT]
+            art.videos = [r for r in all_resources if r.usage == Usage.VIDEO]
+            art.audios = [r for r in all_resources if r.usage == Usage.AUDIO]
             return art
         except Article.DoesNotExist:
             return None
@@ -101,7 +112,7 @@ class ArticleFrontendService:
     def get_article_list(
             cls,
             *,
-            category: str | UUID | list[str],
+            category: list[UUID],
             page_number: int = 1,
             page_size: int = 10,
             limit: int | None = None,
@@ -126,8 +137,6 @@ class ArticleFrontendService:
         Returns:
             A plain list when limit is set, otherwise a Django Page object.
         """
-        category_uuids = [category] if not isinstance(category, list) else category
-
         qs = (
             Article.objects
             # Only return published articles, exclude pages and other types
@@ -137,7 +146,9 @@ class ArticleFrontendService:
         )
 
         # Optionally filter by one or more category UUIDs (OR logic)
-        qs = qs.filter(categories__uuid__in=category_uuids).distinct()
+        qs = qs.filter(
+            categories__uuid__in=[u for u in category if u]
+        ).distinct()
 
         # Optionally filter to top-pinned articles only
         if top_only:

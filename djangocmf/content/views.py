@@ -61,14 +61,8 @@ def category_list_view(request, uuid: UUID):
     if category is None:
         raise Http404(_('Category not found.'))
 
-    page_number = int(request.GET.get('page', 1))
-    articles = ArticleFrontendService.get_article_list(
-        category=uuid,
-        page_number=page_number,
-    )
     return _theme_render(request, TemplateAction.LIST, category.template, {
         'category': category,
-        'article_list': articles,
     })
 
 
