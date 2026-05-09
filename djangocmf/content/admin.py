@@ -15,6 +15,7 @@ from django.contrib import messages, admin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Case, When, IntegerField
 from django.urls import reverse_lazy
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
@@ -25,25 +26,45 @@ from djangocmf.cmfadmin.options import CMFStackedInline, CMFTabularInline
 from djangocmf.cmfadmin.templatetags.cmf_tags import icon
 from djangocmf.cmfadmin.widgets import CMFSelect
 from djangocmf.content.enums import ArticleStatus, ArticleType, ArticleSubmitAction, TemplateAction
-from djangocmf.content.models import Article, ArticleResource, ArticleTranslation, Page, Category
+from djangocmf.content.models import Article, ArticleResource, ArticleTranslation, Page, Category, CategoryTranslation
 from djangocmf.content.service.article import ArticleService
 from djangocmf.content.service.category import CategoryService
+
+
+class CategoryTranslationInline(CMFStackedInline):
+    model = CategoryTranslation
+    extra = 0
+    min_num = 1
+    max_num = len(settings.LANGUAGES)
+    fieldsets = [(None, {'fields': [('name', 'language'), 'description']})]
 
 
 @cmfadmin.register(Category)
 class CategoryAdmin(CMFModelAdmin):
     menu_order = 3000
-    list_display = ['sort_order', 'name', 'parent', 'is_active']
-    list_display_links = ['name']
+    inlines = [CategoryTranslationInline]
+    list_display = ['sort_order', 'get_name', 'get_cover', 'parent', 'is_active']
     list_editable = ['is_active', 'sort_order']
-    search_fields = ['name']
+    list_display_links = ['get_name', 'get_cover', ]
+    search_fields = ['translations__name']
+    image_crop_fields = ['cover']
+
     fieldsets = [
         (None, {'fields': [
-            ('name', 'template'),
-            'description',
-            ('parent', 'sort_order', 'is_active'),
+            'parent',
+            ('cover', 'template', 'sort_order', 'is_active'),
         ]}),
     ]
+
+    @admin.display(description=_('name'))
+    def get_name(self, obj):
+        return str(obj)
+
+    @admin.display(description=_('cover'))
+    def get_cover(self, obj):
+        if obj.cover:
+            return format_html('<img src="{}" class="avatar">', obj.cover.url)
+        return '-'
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'parent':
@@ -65,6 +86,9 @@ class CategoryAdmin(CMFModelAdmin):
             kwargs['widget'] = CMFSelect(choices=self._get_template_choices(TemplateAction.LIST))
         return super().formfield_for_dbfield(db_field, request, **kwargs)
 
+    def get_queryset(self, request):
+        return Category.with_translations(super().get_queryset(request))
+
 
 class ArticleResourceInline(CMFTabularInline):
     model = ArticleResource
@@ -77,7 +101,7 @@ class ArticleTranslationInline(CMFStackedInline):
     model = ArticleTranslation
     extra = 0
     template = 'content/edit_inline/translation_tabs.html'
-    fields = ['language_code', 'title', 'subtitle', 'summary', 'content']
+    fields = ['language', 'title', 'subtitle', 'summary', 'content']
     rich_text_fields = ['content']
 
     def get_max_num(self, request, obj=None, **kwargs):
@@ -94,7 +118,7 @@ class ArticleTranslationInline(CMFStackedInline):
         qs = super().get_queryset(request)
         return qs.annotate(
             is_default=Case(
-                When(language_code=settings.LANGUAGE_CODE, then=0),
+                When(language=settings.LANGUAGE_CODE, then=0),
                 default=1,
                 output_field=IntegerField()
             )
@@ -103,7 +127,7 @@ class ArticleTranslationInline(CMFStackedInline):
     def get_fields(self, request, obj=None):
         fields = list(super().get_fields(request, obj))
         if not settings.USE_I18N:
-            fields = [f for f in fields if f != 'language_code']
+            fields = [f for f in fields if f != 'language']
         return fields
 
 
@@ -127,8 +151,7 @@ class ArticleAdmin(CMFModelAdmin):
 
     @admin.display(description=_('title'), ordering='translations__title')
     def get_title(self, obj):
-        translation = obj.get_translation()
-        return translation.title if translation else f'({obj.article_uuid})'
+        return str(obj)
 
     @admin.display(description=_('status'), ordering='status')
     def status_display(self, obj):
@@ -153,7 +176,7 @@ class ArticleAdmin(CMFModelAdmin):
         cats = obj.categories.all()
         if not cats:
             return '-'
-        return ', '.join(c.name for c in cats)
+        return ', '.join(str(c) for c in cats)
 
     def has_add_permission(self, request):
         return super().has_add_permission(request) and request.user.has_perm('content.write_article')
@@ -162,16 +185,22 @@ class ArticleAdmin(CMFModelAdmin):
         return super().has_change_permission(request, obj) and request.user.has_perm('content.write_article')
 
     def get_queryset(self, request):
-        qs = (
+        qs = Article.with_translations(
             super().get_queryset(request)
             .filter(type=ArticleType.ARTICLE)
-            .prefetch_related('translations', 'categories')
+            .prefetch_related('categories')
         )
         if request.GET.get('status__exact') != ArticleStatus.DELETED:
             qs = qs.exclude(status=ArticleStatus.DELETED)
         return qs
 
-    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+    def changeform_view(
+            self,
+            request,
+            object_id=None,
+            form_url='',
+            extra_context=None
+    ):
         extra_context = extra_context or {}
 
         if object_id:

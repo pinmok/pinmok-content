@@ -16,15 +16,18 @@ Created:
 from dataclasses import dataclass
 
 from djangocmf.content.models import Category
+from djangocmf.core.constants import DEFAULT_SORT_ORDER
 from djangocmf.core.libs.tree import TreeNode
 
 
 @dataclass(kw_only=True)
 class CategoryNode(TreeNode["CategoryNode"]):
     """Tree node representation of a Category."""
-    sort_order: int = 0
+    sort_order: int = DEFAULT_SORT_ORDER
     name: str = ""
     uuid: str = ""
+    cover: str = ""
+    description: str = ""
 
 
 class CategoryService:
@@ -39,19 +42,20 @@ class CategoryService:
     @classmethod
     def _load_nodes(cls) -> list[CategoryNode]:
         """
-        Fetch all categories and their translated names for the current language.
-
-        Falls back to the first available translation if the current language
-        is not found.
+        Fetch all categories with translations prefetched.
+        Language fallback is handled by TranslatableModel.get_translation().
         """
-        categories = Category.objects.values('id', 'parent_id', 'uuid', 'sort_order', 'name')
+        categories = Category.with_translations()
+
         return [
             CategoryNode(
-                id=cat['id'],
-                parent_id=cat['parent_id'],
-                uuid=cat['uuid'],
-                sort_order=cat['sort_order'],
-                name=cat['name'],
+                id=cat.id,
+                parent_id=cat.parent_id,
+                uuid=str(cat.uuid),
+                sort_order=cat.sort_order,
+                name=cat.translation.name if cat.translation else '',
+                cover=cat.cover.url if cat.cover else '',
+                description=cat.translation.description if cat.translation else '',
             )
             for cat in categories
         ]

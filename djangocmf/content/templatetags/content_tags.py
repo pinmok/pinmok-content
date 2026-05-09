@@ -47,6 +47,24 @@ def ribbon(status: str):
     return mark_safe(f'<div class="ribbon {css_class}">{label}</div>')
 
 
+def _to_uuid(val) -> UUID | None:
+    """
+    Normalize a single value to UUID.
+    Accepts: UUID, str (valid UUID format), or any model instance with a uuid attribute.
+    Returns None for invalid or unrecognized input.
+    """
+    if isinstance(val, UUID):
+        return val
+    if hasattr(val, 'uuid'):
+        return val.uuid
+    if isinstance(val, str):
+        try:
+            return UUID(val)
+        except ValueError:
+            return None
+    return None
+
+
 @register.simple_tag(name='articles')
 def articles_tag(
         category: str | list,
@@ -76,23 +94,6 @@ def articles_tag(
         {% articles category=uuid page_num=current_page page_size=10 as paged %}
         {% articles top=True limit=2 as top_articles %}
     """
-
-    def _to_uuid(val) -> UUID | None:
-        """
-        Normalize a single value to UUID.
-        Accepts: UUID, str (valid UUID format), or any model instance with a uuid attribute.
-        Returns None for invalid or unrecognized input.
-        """
-        if isinstance(val, UUID):
-            return val
-        if hasattr(val, 'uuid'):
-            return val.uuid
-        if isinstance(val, str):
-            try:
-                return UUID(val)
-            except ValueError:
-                return None
-        return None
 
     def _normalize_uuids(value) -> list[UUID]:
         """
@@ -143,30 +144,16 @@ def article_tag(uuid: UUID) -> Article | None:
         {% endif %}
     """
     try:
-        return ArticleFrontendService.get_article_by_uuid(uuid)
+        art_id = _to_uuid(uuid)
+        if art_id is not None:
+            return ArticleFrontendService.get_article_by_uuid(art_id)
     except ValidationError as e:
         if settings.DEBUG:
             raise e
         return None
 
 
-@register.simple_tag(name='page')
-def page_tag(uuid: UUID) -> Article | None:
-    """
-    Return a single published page by UUID, or None if not found.
-
-    Usage:
-        {% page uuid=some_uuid as pg %}
-        {% if pg %}
-            {{ pg.translation.title }}
-        {% endif %}
-    """
-    try:
-        return ArticleFrontendService.get_article_by_uuid(uuid)
-    except ValidationError as e:
-        if settings.DEBUG:
-            raise e
-        return None
+register.simple_tag(name='page')(article_tag)
 
 
 @register.simple_tag(name='category')
@@ -177,7 +164,7 @@ def category_tag(uuid: UUID) -> Category | None:
     Usage:
         {% category uuid=some_uuid as cat %}
         {% if cat %}
-            {{ cat.name }}
+            {{ cat.translation.name }}
         {% endif %}
     """
     try:

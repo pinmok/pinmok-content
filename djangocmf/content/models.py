@@ -12,16 +12,16 @@ Created:
 """
 import uuid
 
-from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from djangocmf.cmfadmin.models import Resource
 from djangocmf.content.enums import ArticleStatus, ArticleType, Usage, TemplateAction
-from djangocmf.core.constants import DEFAULT_SORT_ORDER
+from djangocmf.core.constants import DEFAULT_SORT_ORDER, TRANSLATION_RELATED_NAME
+from djangocmf.core.translatable import TranslatableModel, TranslationModel
 
 
-class Category(models.Model):
+class Category(TranslatableModel):
     """ Article category """
     parent = models.ForeignKey(
         'self',
@@ -37,6 +37,11 @@ class Category(models.Model):
         unique=True,
         default=uuid.uuid4
     )
+    cover = models.ImageField(
+        _('cover image'),
+        null=True,
+        blank=True,
+    )
     template = models.CharField(
         _('template'),
         max_length=255,
@@ -51,27 +56,47 @@ class Category(models.Model):
         _('sort order'),
         default=DEFAULT_SORT_ORDER
     )
-    name = models.CharField(
-        _('category name'),
-        max_length=255
-    )
-    description = models.CharField(
-        _('description'),
-        max_length=200,
-        blank=True,
-        default=''
-    )
 
     class Meta:
         verbose_name = _('category')
         verbose_name_plural = _('categories')
         ordering = ['sort_order', 'id']
 
-    def __str__(self):
-        return f"{self.name}"
+
+class CategoryTranslation(TranslationModel):
+    """ Language-specific translation for a category. """
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name=TRANSLATION_RELATED_NAME,
+        verbose_name=_('category'),
+    )
+    name = models.CharField(
+        _('category name'),
+        max_length=255,
+    )
+    description = models.CharField(
+        _('description'),
+        max_length=200,
+        blank=True,
+        default='',
+    )
+
+    class Meta:
+        verbose_name = _('category translation')
+        verbose_name_plural = _('category translations')
+        constraints = [
+            models.UniqueConstraint(
+                fields=['category', 'language'],
+                name='uniq_category_language'
+            )
+        ]
+
+    def get_display_text(self):
+        return self.name
 
 
-class Article(models.Model):
+class Article(TranslatableModel):
     """
     Article master record. Language-independent fields only.
     Translatable content is stored in ArticleTranslation.
@@ -151,29 +176,8 @@ class Article(models.Model):
             ('publish_article', 'Can publish article'),
         ]
 
-    def __str__(self):
-        # Try to return the default-language title, fall back to UUID
-        translation = self.get_translation()
-        return translation.title if translation and translation.title else f'Article({self.uuid})'
 
-    def get_translation(self, language_code=None):
-        """
-        Return the ArticleTranslation for the given language code.
-        Falls back to settings.LANGUAGE_CODE, then any available translation.
-        Works with or without prefetch_related('translations').
-        """
-        language_code = language_code or settings.LANGUAGE_CODE
-        translations = self.translations.all()
-        result = next((t for t in translations if t.language_code == language_code), None)
-        if result is None:
-            result = next(iter(translations), None)
-        return result
-
-    # Dynamically attached by content_tags._attach_translation()
-    translation: ArticleTranslation | None
-
-
-class ArticleTranslation(models.Model):
+class ArticleTranslation(TranslationModel):
     """
     Language-specific content for an Article.
     One row per (article, language_code) combination.
@@ -181,14 +185,8 @@ class ArticleTranslation(models.Model):
     article = models.ForeignKey(
         Article,
         on_delete=models.CASCADE,
-        related_name='translations',
+        related_name=TRANSLATION_RELATED_NAME,
         verbose_name=_('article')
-    )
-    language_code = models.CharField(
-        _('language'),
-        max_length=10,
-        choices=settings.LANGUAGES,
-        default=settings.LANGUAGE_CODE
     )
     title = models.CharField(
         _('title'),
@@ -215,11 +213,15 @@ class ArticleTranslation(models.Model):
     class Meta:
         verbose_name = _('article translation')
         verbose_name_plural = _('article translations')
-        unique_together = [('article', 'language_code')]
-        ordering = ['language_code']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['article', 'language'],
+                name='uniq_article_language'
+            )
+        ]
 
-    def __str__(self):
-        return f'{self.article} [{self.language_code}]'
+    def get_display_text(self):
+        return self.title
 
 
 class Page(Article):
