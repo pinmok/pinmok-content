@@ -23,14 +23,14 @@
 
     /**
      * Return the display label for a row.
-     * Reads the current selected option text from the language_code <select>.
+     * Reads the current selected option text from the language <select>.
      * Falls back to "New Language" when no language is selected.
      * @param {number} index
      * @returns {string}
      */
     function getLabel(index) {
-        const el = document.getElementById('id_' + PREFIX + '-' + index + '-language_code');
-        return (el && el.value) ? el.selectedOptions[0].text : 'New Language';
+        const el = document.getElementById('id_' + PREFIX + '-' + index + '-language');
+        return (el && el.value) ? el.selectedOptions[0].text : gettext('New Language');
     }
 
     /**
@@ -92,12 +92,12 @@
     }
 
     /**
-     * Bind a change listener on the language_code select for a given row index.
+     * Bind a change listener on the language select for a given row index.
      * Keeps the corresponding nav tab label in sync with the selected language.
      * @param {number} index
      */
     function bindLabelSync(index) {
-        const select = document.getElementById('id_' + PREFIX + '-' + index + '-language_code');
+        const select = document.getElementById('id_' + PREFIX + '-' + index + '-language');
         if (!select) return;
         select.addEventListener('change', function () {
             const rows     = Array.from(group.querySelectorAll('.inline-related:not(.empty-form)'));

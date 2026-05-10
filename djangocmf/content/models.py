@@ -167,6 +167,10 @@ class Article(TranslatableModel):
         auto_now=True
     )
 
+    # Permission strings for use with request.user.has_perm()
+    PERM_WRITE = 'content.write_article'
+    PERM_PUBLISH = 'content.publish_article'
+
     class Meta:
         verbose_name = _('article')
         verbose_name_plural = _('articles')

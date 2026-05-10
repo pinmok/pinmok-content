@@ -21,6 +21,7 @@ class ArticleStatus(models.TextChoices):
     PENDING = 'pending', _('Pending')
     RETURNED = 'returned', _('Returned')
     PUBLISHED = 'published', _('Published')
+    RETRACTED = 'retracted', _('Retracted')
     DELETED = 'deleted', _('Deleted')
 
     @property
@@ -30,6 +31,7 @@ class ArticleStatus(models.TextChoices):
             self.PENDING: 'warning',
             self.RETURNED: 'danger',
             self.PUBLISHED: 'primary',
+            self.RETRACTED: 'secondary',
             self.DELETED: 'dark'
         }
         return colors.get(self, 'secondary')
@@ -48,7 +50,7 @@ class ArticleSubmitAction(models.TextChoices):
             self.PENDING: ArticleStatus.PENDING,
             self.PUBLISH: ArticleStatus.PUBLISHED,
             self.REJECT: ArticleStatus.RETURNED,
-            self.RETRACT: ArticleStatus.RETURNED,
+            self.RETRACT: ArticleStatus.RETRACTED,
             self.DELETE: ArticleStatus.DELETED,
         }[self]
 

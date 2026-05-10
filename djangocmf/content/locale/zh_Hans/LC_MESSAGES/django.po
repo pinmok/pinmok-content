@@ -127,6 +127,12 @@ msgstr "描述"
 msgid "category"
 msgstr "分类"
 
+#: .\djangocmf\content\models.py:86 .\djangocmf\content\models.py:87
+msgid "category translation"
+msgstr "分类翻译"
+msgid "category translations"
+msgstr "分类翻译"
+
 #: .\djangocmf\content\models.py:92
 msgid "type"
 msgstr "类型"

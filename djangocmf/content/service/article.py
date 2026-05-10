@@ -22,13 +22,22 @@ from djangocmf.content.models import Article
 class ArticleService:
     # --- status transition rules ---
     TRANSITIONS = {
-        ArticleStatus.DRAFT: [ArticleStatus.PENDING],
-        ArticleStatus.PENDING: [ArticleStatus.PUBLISHED, ArticleStatus.RETURNED],
-        ArticleStatus.PUBLISHED: [ArticleStatus.RETURNED],
-        ArticleStatus.RETURNED: [ArticleStatus.PENDING],
+        ArticleStatus.DRAFT: [ArticleStatus.PENDING, ArticleStatus.PUBLISHED],
+        ArticleStatus.PENDING: [ArticleStatus.RETURNED, ArticleStatus.PUBLISHED],
+        ArticleStatus.PUBLISHED: [ArticleStatus.RETRACTED],
+        ArticleStatus.RETURNED: [ArticleStatus.PENDING, ArticleStatus.PUBLISHED],
+        ArticleStatus.RETRACTED: [ArticleStatus.PENDING, ArticleStatus.PUBLISHED],
         ArticleStatus.DELETED: [],
     }
     PUBLISH_REQUIRED = {ArticleStatus.PUBLISHED, ArticleStatus.RETURNED}
+
+    # Save button visibility per status
+    # PENDING and PUBLISHED: only publish-perm users can meaningfully save
+    SAVE_ALLOWED = {
+        ArticleStatus.DRAFT,
+        ArticleStatus.RETURNED,
+        ArticleStatus.RETRACTED,
+    }
 
     @classmethod
     def get_allowed_transitions(cls, current_status):
@@ -76,8 +85,11 @@ class ArticleService:
 
         buttons = []
         match current_status:
-            case ArticleStatus.DRAFT | ArticleStatus.RETURNED:
-                buttons = [btn(ArticleSubmitAction.PENDING, 'btn-warning')]
+            case ArticleStatus.DRAFT | ArticleStatus.RETURNED | ArticleStatus.RETRACTED:
+                if has_publish_perm:
+                    buttons = [btn(ArticleSubmitAction.PUBLISH, 'btn-success')]
+                else:
+                    buttons = [btn(ArticleSubmitAction.PENDING, 'btn-warning')]
 
             case ArticleStatus.PENDING if has_publish_perm:
                 buttons = [
@@ -93,26 +105,10 @@ class ArticleService:
 
         return buttons
 
-    # Save button visibility per status
-    # PENDING and PUBLISHED: only publish-perm users can meaningfully save
-    # DELETED: nobody should be editing
-    SAVE_ALLOWED = {
-        ArticleStatus.DRAFT,
-        ArticleStatus.RETURNED,
-    }
-    SAVE_ALLOWED_WITH_PERM = {
-        ArticleStatus.PENDING,
-        ArticleStatus.PUBLISHED,
-    }
-
     @classmethod
-    def show_save_button(cls, current_status, has_publish_perm):
+    def show_save_button(cls, current_status):
         """Return whether the plain Save button should be shown."""
-        if current_status in cls.SAVE_ALLOWED:
-            return True
-        if current_status in cls.SAVE_ALLOWED_WITH_PERM and has_publish_perm:
-            return True
-        return False
+        return current_status in cls.SAVE_ALLOWED
 
     @staticmethod
     def get_pages():
@@ -122,7 +118,7 @@ class ArticleService:
         Returns:
             QuerySet[dict]: Each item contains:
                 - uuid: article UUID
-                - translations__title: title in current language
+                - title: article title in current language
 
         Notes:
             - Assumes one translation per article per language.
@@ -131,5 +127,5 @@ class ArticleService:
         return Article.objects.filter(
             type=ArticleType.PAGE,
             status=ArticleStatus.PUBLISHED,
-            translations__language_code=get_language(),
+            translations__language=get_language(),
         ).values('uuid').annotate(title=F('translations__title'))

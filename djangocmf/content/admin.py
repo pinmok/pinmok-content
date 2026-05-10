@@ -136,6 +136,7 @@ class ArticleAdmin(CMFModelAdmin):
     back_url = reverse_lazy('admin:content_article_changelist')
     change_form_template = 'content/articles.html'
     menu_order = 1000
+    actions = ['retract_articles']
 
     fields = ['categories', 'cover', 'template', 'sort_order', 'extra', 'is_top', 'is_recommended']
     list_display = ['sort_order', 'get_title', 'categories_display', 'status_display', 'published_at']
@@ -178,11 +179,23 @@ class ArticleAdmin(CMFModelAdmin):
             return '-'
         return ', '.join(str(c) for c in cats)
 
-    def has_add_permission(self, request):
-        return super().has_add_permission(request) and request.user.has_perm('content.write_article')
+    @admin.action(description=_('Retract selected articles'))
+    def retract_articles(self, request, queryset):
+        # Only users with publish permission can retract articles
+        if not request.user.has_perm(Article.PERM_PUBLISH):
+            self.message_user(request, _('Permission denied'), level=messages.ERROR)
 
-    def has_change_permission(self, request, obj=None):
-        return super().has_change_permission(request, obj) and request.user.has_perm('content.write_article')
+        # Only published articles are affected; other statuses are silently ignored
+        count = queryset.filter(status=ArticleStatus.PUBLISHED).update(status=ArticleStatus.RETRACTED)
+        self.message_user(request, _(f'{count} articles retracted.'))
+
+    def has_add_permission(self, request):
+        return super().has_add_permission(request) and request.user.has_perm(Article.PERM_WRITE)
+
+    def has_change_permission(self, request, obj: Article | None = None):
+        if not super().has_change_permission(request, obj):
+            return False
+        return request.user.has_perm(Article.PERM_WRITE)
 
     def get_queryset(self, request):
         qs = Article.with_translations(
@@ -209,12 +222,12 @@ class ArticleAdmin(CMFModelAdmin):
         else:
             current_status = ArticleStatus.DRAFT
 
-        has_publish = request.user.has_perm('content.publish_article')
+        has_publish = request.user.has_perm(Article.PERM_PUBLISH)
         extra_context['transition_buttons'] = ArticleService.get_transition_buttons(
             current_status, has_publish
         )
         extra_context['has_publish_perm'] = has_publish
-        extra_context['show_save'] = ArticleService.show_save_button(current_status, has_publish)
+        extra_context['show_save'] = ArticleService.show_save_button(current_status)
 
         return super().changeform_view(request, object_id, form_url, extra_context)
 
@@ -225,7 +238,7 @@ class ArticleAdmin(CMFModelAdmin):
         return form
 
     def save_model(self, request, obj, form, change):
-        has_publish = request.user.has_perm('content.publish_article')
+        has_publish = request.user.has_perm(Article.PERM_PUBLISH)
 
         action = next(
             (ArticleSubmitAction(key) for key in request.POST if key in ArticleSubmitAction.values),
