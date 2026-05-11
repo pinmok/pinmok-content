@@ -55,6 +55,10 @@ msgid "Published"
 msgstr "已发布"
 
 #: .\djangocmf\content\enums.py:24
+msgid "Retracted"
+msgstr "已撤回"
+
+#: .\djangocmf\content\enums.py:25
 msgid "Deleted"
 msgstr "已删除"
 
@@ -346,3 +350,11 @@ msgstr "未找到文章"
 #: .\djangocmf\content\views.py:94
 msgid "Page not found."
 msgstr "未找到单页"
+
+#: .\djangocmf\content\admin.py:182
+msgid "Retract selected articles"
+msgstr "撤回所选的文章"
+
+#: .\djangocmf\content\admin.py:190
+msgid "%d articles retracted."
+msgstr "%d 篇文章已撤回。"

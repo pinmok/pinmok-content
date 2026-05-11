@@ -14,6 +14,7 @@ from django.conf import settings
 from django.contrib import messages, admin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Case, When, IntegerField
+from django.db.models.fields import BooleanField
 from django.urls import reverse_lazy
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -23,8 +24,7 @@ from djangocmf import cmfadmin
 from djangocmf.cmfadmin.admin import CMFModelAdmin
 from djangocmf.cmfadmin.fields import IndentedModelChoiceField
 from djangocmf.cmfadmin.options import CMFStackedInline, CMFTabularInline
-from djangocmf.cmfadmin.templatetags.cmf_tags import icon
-from djangocmf.cmfadmin.widgets import CMFSelect
+from djangocmf.cmfadmin.widgets import CMFSelect, CMFSwitch
 from djangocmf.content.enums import ArticleStatus, ArticleType, ArticleSubmitAction, TemplateAction
 from djangocmf.content.models import Article, ArticleResource, ArticleTranslation, Page, Category, CategoryTranslation
 from djangocmf.content.service.article import ArticleService
@@ -136,39 +136,35 @@ class ArticleAdmin(CMFModelAdmin):
     back_url = reverse_lazy('admin:content_article_changelist')
     change_form_template = 'content/articles.html'
     menu_order = 1000
-    actions = ['retract_articles']
+    image_crop_fields = [{'cover': {'aspectRatio': '4:3'}}]
 
+    formfield_overrides = {
+        **CMFModelAdmin.formfield_overrides,
+        BooleanField: {'widget': CMFSwitch}
+    }
+    actions = ['retract_articles']
     fields = ['categories', 'cover', 'template', 'sort_order', 'extra', 'is_top', 'is_recommended']
-    list_display = ['sort_order', 'get_title', 'categories_display', 'status_display', 'published_at']
+    list_display = [
+        'sort_order', 'get_title', 'categories_display', 'status_display',
+        'published_at', 'is_top', 'is_recommended'
+    ]
     list_display_links = ['get_title']
     list_filter = ['status']
+    list_editable = ['is_top', 'is_recommended']
     search_fields = ['translations__title', 'translations__subtitle']
     date_hierarchy = 'published_at'
     autocomplete_fields = ['categories']
 
     inlines = [ArticleTranslationInline, ArticleResourceInline]
 
-    image_crop_fields = [{'cover': {'aspectRatio': '16:9'}}]
-
     @admin.display(description=_('title'), ordering='translations__title')
     def get_title(self, obj):
         return str(obj)
 
-    @admin.display(description=_('status'), ordering='status')
+    @admin.display(description=_('status'))
     def status_display(self, obj):
         status = ArticleStatus(obj.status)
-        top_icon = icon(
-            'tabler-pin' if obj.is_top else 'tabler-pin-off',
-            f'icon {"text-primary" if obj.is_top else "text-muted"}',
-        )
-        recommended_icon = icon(
-            'tabler-thumb-up' if obj.is_recommended else 'tabler-thumb-up-off',
-            f'icon {"text-primary" if obj.is_recommended else "text-muted"}',
-        )
-
         return mark_safe(
-            f'<span class="me-1" data-bs-toggle="tooltip" data-bs-original-title="Is Top">{top_icon}</span>'
-            f'<span class="me-1" data-bs-toggle="tooltip" data-bs-original-title="Is Recommended">{recommended_icon}</span>'
             f'<span class="badge bg-{status.color} text-{status.color}-fg">{status.label}</span>'
         )
 
@@ -187,7 +183,7 @@ class ArticleAdmin(CMFModelAdmin):
 
         # Only published articles are affected; other statuses are silently ignored
         count = queryset.filter(status=ArticleStatus.PUBLISHED).update(status=ArticleStatus.RETRACTED)
-        self.message_user(request, _(f'{count} articles retracted.'))
+        self.message_user(request, _('%d articles retracted.') % count)
 
     def has_add_permission(self, request):
         return super().has_add_permission(request) and request.user.has_perm(Article.PERM_WRITE)
@@ -282,11 +278,7 @@ class PageAdmin(ArticleAdmin):
     menu_order = 2000
     fields = ['cover', 'template', 'sort_order', 'extra']
     list_display = ['get_title', 'status_display', 'published_at']
-
-    @admin.display(description=_('status'))
-    def status_display(self, obj):
-        status = ArticleStatus(obj.status)
-        return mark_safe(f'<span class="badge bg-{status.color} text-{status.color}-fg">{status.label}</span>')
+    list_editable = []
 
     def get_queryset(self, request):
         qs = (

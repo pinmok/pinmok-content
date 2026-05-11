@@ -27,11 +27,11 @@ class ArticleStatus(models.TextChoices):
     @property
     def color(self) -> str:
         colors = {
-            self.DRAFT: 'success',
+            self.DRAFT: 'secondary',
             self.PENDING: 'warning',
             self.RETURNED: 'danger',
-            self.PUBLISHED: 'primary',
-            self.RETRACTED: 'secondary',
+            self.PUBLISHED: 'success',
+            self.RETRACTED: 'info',
             self.DELETED: 'dark'
         }
         return colors.get(self, 'secondary')
