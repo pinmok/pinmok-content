@@ -15,9 +15,9 @@ Created:
 """
 from dataclasses import dataclass
 
-from djangocmf.content.models import Category
-from djangocmf.core.constants import DEFAULT_SORT_ORDER
-from djangocmf.core.libs.tree import TreeNode
+from pinmok.content.models import Category
+from pinmok.core.constants import DEFAULT_SORT_ORDER
+from pinmok.core.libs.tree import TreeNode
 
 
 @dataclass(kw_only=True)

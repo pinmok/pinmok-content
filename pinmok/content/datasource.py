@@ -13,10 +13,10 @@ Created:
 from django.http import QueryDict
 from django.utils.translation import gettext_lazy as _
 
-from djangocmf.cmfadmin.datasource import datasource
-from djangocmf.cmfadmin.widgets import CMFSelect
-from djangocmf.content.service.article import ArticleService
-from djangocmf.content.service.category import CategoryService
+from pinmok.cmfadmin.datasource import datasource
+from pinmok.cmfadmin.widgets import CMFSelect
+from pinmok.content.service.article import ArticleService
+from pinmok.content.service.category import CategoryService
 
 
 @datasource.register('category')

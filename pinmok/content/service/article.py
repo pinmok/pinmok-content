@@ -15,8 +15,8 @@ from django.db.models import F
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _, get_language
 
-from djangocmf.content.enums import ArticleStatus, ArticleSubmitAction, ArticleType
-from djangocmf.content.models import Article
+from pinmok.content.enums import ArticleStatus, ArticleSubmitAction, ArticleType
+from pinmok.content.models import Article
 
 
 class ArticleService:

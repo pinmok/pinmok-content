@@ -20,15 +20,15 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from djangocmf import cmfadmin
-from djangocmf.cmfadmin.admin import CMFModelAdmin
-from djangocmf.cmfadmin.fields import IndentedModelChoiceField
-from djangocmf.cmfadmin.options import CMFStackedInline, CMFTabularInline
-from djangocmf.cmfadmin.widgets import CMFSelect, CMFSwitch
-from djangocmf.content.enums import ArticleStatus, ArticleType, ArticleSubmitAction, TemplateAction
-from djangocmf.content.models import Article, ArticleResource, ArticleTranslation, Page, Category, CategoryTranslation
-from djangocmf.content.service.article import ArticleService
-from djangocmf.content.service.category import CategoryService
+from pinmok import cmfadmin
+from pinmok.cmfadmin.admin import CMFModelAdmin
+from pinmok.cmfadmin.fields import IndentedModelChoiceField
+from pinmok.cmfadmin.options import CMFStackedInline, CMFTabularInline
+from pinmok.cmfadmin.widgets import CMFSelect, CMFSwitch
+from pinmok.content.enums import ArticleStatus, ArticleType, ArticleSubmitAction, TemplateAction
+from pinmok.content.models import Article, ArticleResource, ArticleTranslation, Page, Category, CategoryTranslation
+from pinmok.content.service.article import ArticleService
+from pinmok.content.service.category import CategoryService
 
 
 class CategoryTranslationInline(CMFStackedInline):

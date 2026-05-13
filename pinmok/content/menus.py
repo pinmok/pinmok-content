@@ -10,7 +10,7 @@ Author:
 Created:
   2026/3/21
 """
-from djangocmf.core.menu import menu
+from pinmok.core.menu import menu
 
 admin_menu = [
     menu('content', title='Content Management', icon='tabler-article'),

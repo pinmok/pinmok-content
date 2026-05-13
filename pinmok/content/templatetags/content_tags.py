@@ -19,9 +19,9 @@ from django.core.paginator import Page
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
-from djangocmf.content.enums import ArticleStatus
-from djangocmf.content.models import Article, Category
-from djangocmf.content.service.frontend import ArticleFrontendService, CategoryFrontendService
+from pinmok.content.enums import ArticleStatus
+from pinmok.content.models import Article, Category
+from pinmok.content.service.frontend import ArticleFrontendService, CategoryFrontendService
 from project_settings import settings
 
 register = template.Library()

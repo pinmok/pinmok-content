@@ -13,8 +13,8 @@ Created:
 
 from django.urls import path
 
-from djangocmf.content import views
-from djangocmf.content.enums import TemplateAction
+from pinmok.content import views
+from pinmok.content.enums import TemplateAction
 
 urlpatterns = [
     path('', views.index_view, name=TemplateAction.INDEX),

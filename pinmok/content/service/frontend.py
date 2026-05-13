@@ -21,8 +21,8 @@ from uuid import UUID
 from django.core.paginator import Paginator, Page
 from django.db.models import QuerySet
 
-from djangocmf.content.enums import ArticleStatus, ArticleType, Usage
-from djangocmf.content.models import Article, Category
+from pinmok.content.enums import ArticleStatus, ArticleType, Usage
+from pinmok.content.models import Article, Category
 
 
 # ---------------------------------------------------------------------------

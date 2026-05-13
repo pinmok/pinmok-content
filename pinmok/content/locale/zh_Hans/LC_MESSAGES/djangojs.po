@@ -1,11 +1,11 @@
-# DjangoCMF Simplified Chinese Translation
+# Pinmok Simplified Chinese Translation
 # Copyright (C) 2026 惠达浪
-# This file is distributed under the same license as the DjangoCMF package.
+# This file is distributed under the same license as the Pinmok package.
 # 惠达浪 <crazys@126.com>, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: djangocmf content 1.0\n"
+"Project-Id-Version: pinmok content 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-03 21:31+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -17,6 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: .\djangocmf\content\static\content\js\translation_inline.js:172
+#: .\pinmok\content\static\content\js\translation_inline.js:172
 msgid "New Language"
 msgstr "新语言"

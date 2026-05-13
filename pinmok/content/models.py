@@ -4,7 +4,7 @@
 content.models module
 
 Description:
-  Models for Content of DjangoCMF
+  Models for Content of Pinmok
 Author:
   惠达浪 <crazys@126.com>
 Created:
@@ -15,10 +15,10 @@ import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from djangocmf.cmfadmin.models import Resource
-from djangocmf.content.enums import ArticleStatus, ArticleType, Usage, TemplateAction
-from djangocmf.core.constants import DEFAULT_SORT_ORDER, TRANSLATION_RELATED_NAME
-from djangocmf.core.translatable import TranslatableModel, TranslationModel
+from pinmok.cmfadmin.models import Resource
+from pinmok.content.enums import ArticleStatus, ArticleType, Usage, TemplateAction
+from pinmok.core.constants import DEFAULT_SORT_ORDER, TRANSLATION_RELATED_NAME
+from pinmok.core.translatable import TranslatableModel, TranslationModel
 
 
 class Category(TranslatableModel):

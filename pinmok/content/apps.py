@@ -4,7 +4,7 @@
 content.apps module
 
 Description:
-  apps module of DjangoCMF content
+  apps module of Pinmok content
 Author:
   惠达浪 <crazys@126.com>
 Created:
@@ -16,5 +16,5 @@ from django.utils.translation import gettext_lazy as _
 
 
 class ContentConfig(AppConfig):
-    name = 'djangocmf.content'
+    name = 'pinmok.content'
     verbose_name = _('Content Management')
