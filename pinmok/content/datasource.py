@@ -13,14 +13,14 @@ Created:
 from django.http import QueryDict
 from django.utils.translation import gettext_lazy as _
 
-from pinmok.cmfadmin.datasource import datasource
-from pinmok.cmfadmin.widgets import CMFSelect
 from pinmok.content.service.article import ArticleService
 from pinmok.content.service.category import CategoryService
+from pinmok.padmin.datasource import datasource
+from pinmok.padmin.widgets import PinmokSelect
 
 
 @datasource.register('category')
-class CategoryDataSource(CMFSelect):
+class CategoryDataSource(PinmokSelect):
     def __init__(self, attrs=None, multiple=False):
         choices = [(node.uuid, label) for node, label in CategoryService.get_items()]
         super().__init__(attrs=attrs, choices=choices)
@@ -40,7 +40,7 @@ class CategoryDataSource(CMFSelect):
 
 
 @datasource.register('page')
-class PageDataSource(CMFSelect):
+class PageDataSource(PinmokSelect):
     def __init__(self, attrs=None):
         choices = [('', _('Select Page'))] + [
             (r['uuid'], r['title'])

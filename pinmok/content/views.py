@@ -19,9 +19,9 @@ from django.http import Http404
 from django.shortcuts import render
 from django.utils.translation import gettext as _
 
-from pinmok.cmfadmin.service.theme import ThemeService
 from pinmok.content.enums import TemplateAction
 from pinmok.content.service.frontend import ArticleFrontendService, CategoryFrontendService
+from pinmok.padmin.service.theme import ThemeService
 
 
 def _theme_render(request, action: TemplateAction, filename: str, context: dict = None):

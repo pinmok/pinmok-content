@@ -20,18 +20,18 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from pinmok import cmfadmin
-from pinmok.cmfadmin.admin import CMFModelAdmin
-from pinmok.cmfadmin.fields import IndentedModelChoiceField
-from pinmok.cmfadmin.options import CMFStackedInline, CMFTabularInline
-from pinmok.cmfadmin.widgets import CMFSelect, CMFSwitch
+from pinmok import padmin
 from pinmok.content.enums import ArticleStatus, ArticleType, ArticleSubmitAction, TemplateAction
 from pinmok.content.models import Article, ArticleResource, ArticleTranslation, Page, Category, CategoryTranslation
 from pinmok.content.service.article import ArticleService
 from pinmok.content.service.category import CategoryService
+from pinmok.padmin.admin import PinmokModelAdmin
+from pinmok.padmin.fields import IndentedModelChoiceField
+from pinmok.padmin.options import PinmokStackedInline, PinmokTabularInline
+from pinmok.padmin.widgets import PinmokSelect, PinmokSwitch
 
 
-class CategoryTranslationInline(CMFStackedInline):
+class CategoryTranslationInline(PinmokStackedInline):
     model = CategoryTranslation
     extra = 0
     min_num = 1
@@ -39,8 +39,8 @@ class CategoryTranslationInline(CMFStackedInline):
     fieldsets = [(None, {'fields': [('name', 'language'), 'description']})]
 
 
-@cmfadmin.register(Category)
-class CategoryAdmin(CMFModelAdmin):
+@padmin.register(Category)
+class CategoryAdmin(PinmokModelAdmin):
     menu_order = 3000
     inlines = [CategoryTranslationInline]
     list_display = ['sort_order', 'get_name', 'get_cover', 'parent', 'is_active']
@@ -74,7 +74,7 @@ class CategoryAdmin(CMFModelAdmin):
             return IndentedModelChoiceField(
                 pairs=items,
                 queryset=Category.objects.exclude(pk=exclude_id) if exclude_id else Category.objects.all(),
-                widget=CMFSelect(),
+                widget=PinmokSelect(),
                 label=Category._meta.get_field('parent').verbose_name,  # type: ignore[union-attr]
                 required=False,
                 empty_label=_('Top Level'),
@@ -83,21 +83,21 @@ class CategoryAdmin(CMFModelAdmin):
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == 'template':
-            kwargs['widget'] = CMFSelect(choices=self._get_template_choices(TemplateAction.LIST))
+            kwargs['widget'] = PinmokSelect(choices=self._get_template_choices(TemplateAction.LIST))
         return super().formfield_for_dbfield(db_field, request, **kwargs)
 
     def get_queryset(self, request):
         return Category.with_translations(super().get_queryset(request))
 
 
-class ArticleResourceInline(CMFTabularInline):
+class ArticleResourceInline(PinmokTabularInline):
     model = ArticleResource
     extra = 0
     template = 'content/edit_inline/tabular_no_original.html'
     fields = ['resource', 'usage', 'alt', 'sort_order']
 
 
-class ArticleTranslationInline(CMFStackedInline):
+class ArticleTranslationInline(PinmokStackedInline):
     model = ArticleTranslation
     extra = 0
     template = 'content/edit_inline/translation_tabs.html'
@@ -131,16 +131,16 @@ class ArticleTranslationInline(CMFStackedInline):
         return fields
 
 
-@cmfadmin.register(Article)
-class ArticleAdmin(CMFModelAdmin):
+@padmin.register(Article)
+class ArticleAdmin(PinmokModelAdmin):
     back_url = reverse_lazy('admin:content_article_changelist')
     change_form_template = 'content/articles.html'
     menu_order = 1000
     image_crop_fields = [{'cover': {'aspectRatio': '4:3'}}]
 
     formfield_overrides = {
-        **CMFModelAdmin.formfield_overrides,
-        BooleanField: {'widget': CMFSwitch}
+        **PinmokModelAdmin.formfield_overrides,
+        BooleanField: {'widget': PinmokSwitch}
     }
     actions = ['retract_articles']
     fields = ['categories', 'cover', 'template', 'sort_order', 'extra', 'is_top', 'is_recommended']
@@ -265,11 +265,11 @@ class ArticleAdmin(CMFModelAdmin):
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == 'template':
-            kwargs['widget'] = CMFSelect(choices=self._get_template_choices(TemplateAction.ARTICLE))
+            kwargs['widget'] = PinmokSelect(choices=self._get_template_choices(TemplateAction.ARTICLE))
         return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 
-@cmfadmin.register(Page)
+@padmin.register(Page)
 class PageAdmin(ArticleAdmin):
     """
     Admin for Page type articles.
