@@ -17,3 +17,4 @@ from django.apps import AppConfig
 class ContentConfig(AppConfig):
     name = 'pinmok.content'
     verbose_name = 'Pinmok Content'
+    label = name.rpartition('.')[2]

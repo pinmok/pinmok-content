@@ -19,6 +19,7 @@ from django.http import Http404
 from django.shortcuts import render
 from django.utils.translation import gettext as _
 
+from pinmok.content.apps import ContentConfig
 from pinmok.content.enums import TemplateAction
 from pinmok.content.service.frontend import ArticleFrontendService, CategoryFrontendService
 from pinmok.padmin.service.theme import ThemeService
@@ -26,10 +27,10 @@ from pinmok.padmin.service.theme import ThemeService
 
 def _theme_render(request, action: TemplateAction, filename: str, context: dict = None):
     """Resolve template path, inject theme vars, and render."""
-    template_path = ThemeService.get_template_path(filename)
+    template_path = ThemeService.get_template_path(ContentConfig.label, filename)
     if template_path is None:
         raise Http404(_('No active theme.'))
-    ctx = ThemeService.get_vars_context(action)
+    ctx = ThemeService.get_vars_context(ContentConfig.label, action)
     if context:
         ctx.update(context)
     return render(request, template_path, ctx)
@@ -43,12 +44,12 @@ def index_view(request):
     Users who need a custom homepage should define their own view at
     the empty path before including content.urls.
     """
-    template = ThemeService.get_template_path(TemplateAction.INDEX)
+    template = ThemeService.get_template_path(ContentConfig.label, TemplateAction.INDEX)
     if template is None:
         # No active theme or index template not found, fall back to demo
         return render(request, 'content/welcome.html')
 
-    ctx = ThemeService.get_vars_context(TemplateAction.INDEX)
+    ctx = ThemeService.get_vars_context(ContentConfig.label, TemplateAction.INDEX)
     return render(request, template, ctx)
 
 

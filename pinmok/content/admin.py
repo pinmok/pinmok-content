@@ -21,6 +21,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 from pinmok import padmin
+from pinmok.content.apps import ContentConfig
 from pinmok.content.enums import ArticleStatus, ArticleType, ArticleSubmitAction, TemplateAction
 from pinmok.content.models import Article, ArticleResource, ArticleTranslation, Page, Category, CategoryTranslation
 from pinmok.content.service.article import ArticleService
@@ -28,6 +29,7 @@ from pinmok.content.service.category import CategoryService
 from pinmok.padmin.admin import PinmokModelAdmin
 from pinmok.padmin.fields import IndentedModelChoiceField
 from pinmok.padmin.options import PinmokStackedInline, PinmokTabularInline
+from pinmok.padmin.service.theme import ThemeService
 from pinmok.padmin.widgets import PinmokSelect, PinmokSwitch
 
 
@@ -83,7 +85,7 @@ class CategoryAdmin(PinmokModelAdmin):
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == 'template':
-            kwargs['widget'] = PinmokSelect(choices=self._get_template_choices(TemplateAction.LIST))
+            kwargs['widget'] = PinmokSelect(choices=ThemeService.get_template_choices(ContentConfig.label, TemplateAction.LIST))
         return super().formfield_for_dbfield(db_field, request, **kwargs)
 
     def get_queryset(self, request):
@@ -265,7 +267,7 @@ class ArticleAdmin(PinmokModelAdmin):
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == 'template':
-            kwargs['widget'] = PinmokSelect(choices=self._get_template_choices(TemplateAction.ARTICLE))
+            kwargs['widget'] = PinmokSelect(choices=ThemeService.get_template_choices(ContentConfig.label, TemplateAction.ARTICLE))
         return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 
