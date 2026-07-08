@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Pinmok content 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-03 21:31+0800\n"
+"POT-Creation-Date: 2026-06-26 14:34+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: 惠达浪 <crazys@126.com>\n"
 "Language-Team: 惠达浪 <crazys@126.com>\n"
@@ -17,24 +17,51 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: .\pinmok\content\admin.py:152 .\pinmok\content\models.py:67
-#: .\pinmok\content\models.py:83
+#: .\pinmok\content\admin.py:60
+msgid "name"
+msgstr ""
+
+#: .\pinmok\content\admin.py:64
+#, fuzzy
+#| msgid "cover image"
+msgid "cover"
+msgstr "封面图片"
+
+#: .\pinmok\content\admin.py:81
+msgid "Top Level"
+msgstr ""
+
+#: .\pinmok\content\admin.py:161 .\pinmok\content\models.py:196
+msgid "title"
+msgstr "标题"
+
+#: .\pinmok\content\admin.py:165 .\pinmok\content\models.py:134
+msgid "status"
+msgstr ""
+
+#: .\pinmok\content\admin.py:172 .\pinmok\content\models.py:62
+#: .\pinmok\content\models.py:108
 msgid "categories"
 msgstr "分类"
 
-#: .\pinmok\content\admin.py:222
+#: .\pinmok\content\admin.py:179
+msgid "Retract selected articles"
+msgstr "撤回所选的文章"
+
+#: .\pinmok\content\admin.py:183
+msgid "Permission denied"
+msgstr ""
+
+#: .\pinmok\content\admin.py:187
+#, python-format
+msgid "%d articles retracted."
+msgstr "%d 篇文章已撤回。"
+
+#: .\pinmok\content\admin.py:260
 msgid "You do not have permission to publish articles."
 msgstr "你没有发布文章的权限。"
 
-#: .\pinmok\content\apps.py:20
-msgid "Content Management"
-msgstr "内容管理"
-
-#: .\pinmok\content\datasource.py:25
-msgid "Select Category"
-msgstr "选择分类"
-
-#: .\pinmok\content\datasource.py:48
+#: .\pinmok\content\datasource.py:45
 msgid "Select Page"
 msgstr "选择单页"
 
@@ -62,43 +89,49 @@ msgstr "已撤回"
 msgid "Deleted"
 msgstr "已删除"
 
-#: .\pinmok\content\enums.py:39
+#: .\pinmok\content\enums.py:41
 msgid "Submit for review"
 msgstr "提交审核"
 
-#: .\pinmok\content\enums.py:40
+#: .\pinmok\content\enums.py:42
 msgid "Publish"
 msgstr "发布"
 
-#: .\pinmok\content\enums.py:41
+#: .\pinmok\content\enums.py:43
 msgid "Return"
 msgstr "退回"
 
-#: .\pinmok\content\enums.py:42
+#: .\pinmok\content\enums.py:44
 msgid "Retract"
 msgstr "撤回"
 
-#: .\pinmok\content\enums.py:57
+#: .\pinmok\content\enums.py:45
+#, fuzzy
+#| msgid "Deleted"
+msgid "Delete"
+msgstr "已删除"
+
+#: .\pinmok\content\enums.py:59
 msgid "Article"
 msgstr "文章"
 
-#: .\pinmok\content\enums.py:58
+#: .\pinmok\content\enums.py:60
 msgid "Page"
 msgstr "单页"
 
-#: .\pinmok\content\enums.py:62
+#: .\pinmok\content\enums.py:64
 msgid "Gallery"
 msgstr "相册"
 
-#: .\pinmok\content\enums.py:63
+#: .\pinmok\content\enums.py:65
 msgid "Attachment"
 msgstr "附件"
 
-#: .\pinmok\content\enums.py:64
+#: .\pinmok\content\enums.py:66
 msgid "Video"
 msgstr "视频"
 
-#: .\pinmok\content\enums.py:65
+#: .\pinmok\content\enums.py:67
 msgid "Audio"
 msgstr "音频"
 
@@ -106,135 +139,129 @@ msgstr "音频"
 msgid "parent category"
 msgstr "上级分类"
 
-#: .\pinmok\content\models.py:41 .\pinmok\content\models.py:98
-msgid "template"
-msgstr "模板"
-
-#: .\pinmok\content\models.py:47
-msgid "is active"
-msgstr "是否启用"
-
-#: .\pinmok\content\models.py:51 .\pinmok\content\models.py:115
-#: .\pinmok\content\models.py:288
-msgid "sort order"
-msgstr "排序"
-
-#: .\pinmok\content\models.py:55
-msgid "category name"
-msgstr "类别名称"
-
-#: .\pinmok\content\models.py:59
-msgid "description"
-msgstr "描述"
-
-#: .\pinmok\content\models.py:66
-msgid "category"
-msgstr "分类"
-
-#: .\pinmok\content\models.py:86 .\pinmok\content\models.py:87
-msgid "category translation"
-msgstr "分类翻译"
-msgid "category translations"
-msgstr "分类翻译"
-
-#: .\pinmok\content\models.py:92
-msgid "type"
-msgstr "类型"
-
-#: .\pinmok\content\models.py:104
+#: .\pinmok\content\models.py:41 .\pinmok\content\models.py:129
 msgid "cover image"
 msgstr "封面图片"
 
-#: .\pinmok\content\models.py:119
+#: .\pinmok\content\models.py:46 .\pinmok\content\models.py:123
+msgid "template"
+msgstr "模板"
+
+#: .\pinmok\content\models.py:52
+msgid "is active"
+msgstr "是否启用"
+
+#: .\pinmok\content\models.py:56 .\pinmok\content\models.py:140
+#: .\pinmok\content\models.py:276
+msgid "sort order"
+msgstr "排序"
+
+#: .\pinmok\content\models.py:61 .\pinmok\content\models.py:72
+msgid "category"
+msgstr "分类"
+
+#: .\pinmok\content\models.py:75
+msgid "category name"
+msgstr "类别名称"
+
+#: .\pinmok\content\models.py:79
+msgid "description"
+msgstr "描述"
+
+#: .\pinmok\content\models.py:86
+msgid "category translation"
+msgstr "分类翻译"
+
+#: .\pinmok\content\models.py:87
+msgid "category translations"
+msgstr "分类翻译"
+
+#: .\pinmok\content\models.py:117
+msgid "type"
+msgstr "类型"
+
+#: .\pinmok\content\models.py:144
 msgid "extra"
 msgstr "附加信息"
 
-#: .\pinmok\content\models.py:124
+#: .\pinmok\content\models.py:149
 msgid "is top"
 msgstr "置顶"
 
-#: .\pinmok\content\models.py:128
+#: .\pinmok\content\models.py:153
 msgid "recommended"
 msgstr "推荐"
 
-#: .\pinmok\content\models.py:132
+#: .\pinmok\content\models.py:157
 msgid "published at"
 msgstr "发布时间"
 
-#: .\pinmok\content\models.py:137
+#: .\pinmok\content\models.py:162
 msgid "created at"
 msgstr "创建时间"
 
-#: .\pinmok\content\models.py:141
+#: .\pinmok\content\models.py:166
 msgid "updated at"
 msgstr "更新时间"
 
-#: .\pinmok\content\models.py:146 .\pinmok\content\models.py:185
-#: .\pinmok\content\models.py:269
+#: .\pinmok\content\models.py:175 .\pinmok\content\models.py:193
+#: .\pinmok\content\models.py:257
 msgid "article"
 msgstr "文章"
 
-#: .\pinmok\content\models.py:147
+#: .\pinmok\content\models.py:176
 msgid "articles"
 msgstr "文章"
 
-#: .\pinmok\content\models.py:188
-msgid "language"
-msgstr "语言"
-
-#: .\pinmok\content\models.py:194
-msgid "title"
-msgstr "标题"
-
-#: .\pinmok\content\models.py:199
+#: .\pinmok\content\models.py:201
 msgid "subtitle"
 msgstr "副标题"
 
-#: .\pinmok\content\models.py:205
+#: .\pinmok\content\models.py:207
 msgid "summary"
 msgstr "摘要"
 
-#: .\pinmok\content\models.py:205
+#: .\pinmok\content\models.py:212
 msgid "content"
 msgstr "内容"
 
-#: .\pinmok\content\models.py:234
+#: .\pinmok\content\models.py:218
 msgid "article translation"
 msgstr "文章翻译"
 
-#: .\pinmok\content\models.py:235
+#: .\pinmok\content\models.py:219
 msgid "article translations"
 msgstr "文章翻译"
 
-#: .\pinmok\content\models.py:251
+#: .\pinmok\content\models.py:239
 msgid "page"
 msgstr "单页"
 
-#: .\pinmok\content\models.py:252
+#: .\pinmok\content\models.py:240
 msgid "pages"
 msgstr "单页"
 
-#: .\pinmok\content\models.py:275
+#: .\pinmok\content\models.py:263
 msgid "resource"
 msgstr "资源"
 
-#: .\pinmok\content\models.py:278
+#: .\pinmok\content\models.py:266
 msgid "usage"
 msgstr "用途"
 
-#: .\pinmok\content\models.py:283
+#: .\pinmok\content\models.py:271
 msgid "alternative text"
 msgstr "替代文本"
 
-#: .\pinmok\content\models.py:293
+#: .\pinmok\content\models.py:281
 msgid "article resource"
 msgstr "文章资源"
 
-#: .\pinmok\content\models.py:294
+#: .\pinmok\content\models.py:282
 msgid "article resources"
 msgstr "文章资源"
 
-#: .\pinmok\content\service\article.py:47
+#: .\pinmok\content\service\article.py:56
 #, python-format
 msgid "Invalid status transition: %(from)s → %(to)s"
 msgstr "状态变更不允许： %(from)s → %(to)s"
@@ -243,118 +270,142 @@ msgstr "状态变更不允许： %(from)s → %(to)s"
 msgid "Add translation"
 msgstr "添加翻译"
 
+#: .\pinmok\content\templates\content\edit_inline\tabular_no_original.html:57
+#, fuzzy
+#| msgid "Deleted"
+msgid "Delete?"
+msgstr "已删除"
+
 #: .\pinmok\content\templates\content\edit_inline\translation_tabs.html:28
-msgid "Check this box and submit to delete the article in the current language."
+msgid ""
+"Check this box and submit to delete the article in the current language."
 msgstr "勾选此项并提交，即可删除当前语言版本的文章。"
 
-#: .\pinmok\content\templates\content\submit_line.html:12
+#: .\pinmok\content\templates\content\submit_line.html:5
+msgid "Save"
+msgstr ""
+
+#: .\pinmok\content\templates\content\submit_line.html:6
+msgid "Save and continue editing"
+msgstr ""
+
+#: .\pinmok\content\templates\content\submit_line.html:13
 msgid "Back"
 msgstr "返回"
 
-#: .\pinmok\content\templates\content\welcome.html:146
+#: .\pinmok\content\templates\content\welcome.html:143
 msgid "Build faster. Ship sooner. Stay in control."
 msgstr "让开发更高效，让上线更从容，让一切尽在掌握。"
 
-#: .\pinmok\content\templates\content\welcome.html:148
+#: .\pinmok\content\templates\content\welcome.html:145
 msgid ""
-"Pinmok handles the repetitive parts of every project — menus, "
-"permissions, themes, content — so you can focus on what actually makes your "
-"product different."
-msgstr "那些千篇一律的活，Pinmok 替你干了，菜单、权限、主题、内容，一概不用操心，你只需要专注于让产品独一无二的那部分。"
+"Pinmok handles the repetitive parts of every project — menus, permissions, "
+"themes, content — so you can focus on what actually makes your product "
+"different."
+msgstr ""
+"Pinmok 负责处理每个项目中的重复性工作——菜单、权限、主题、内容——使您能够专注于"
+"真正构筑产品差异化的核心业务。"
 
-#: .\pinmok\content\templates\content\welcome.html:156
+#: .\pinmok\content\templates\content\welcome.html:153
 msgid "Go to Admin Panel"
 msgstr "进入后台管理"
 
-#: .\pinmok\content\templates\content\welcome.html:167
+#: .\pinmok\content\templates\content\welcome.html:164
 msgid "Next Steps"
 msgstr "快速开始"
 
-#: .\pinmok\content\templates\content\welcome.html:175
+#: .\pinmok\content\templates\content\welcome.html:172
 msgid "Make it yours"
 msgstr "打造专属于你的应用"
 
-#: .\pinmok\content\templates\content\welcome.html:177
+#: .\pinmok\content\templates\content\welcome.html:174
 msgid "Head to Template Management and install a theme. Your site, your look."
 msgstr "前往模板管理，安装一个主题，即可拥有你自己的网站。"
 
-#: .\pinmok\content\templates\content\welcome.html:186
+#: .\pinmok\content\templates\content\welcome.html:183
 msgid "Set the basics"
 msgstr "进行基础配置"
 
-#: .\pinmok\content\templates\content\welcome.html:188
-msgid "Configure your site name, logo, and contact info in Site Settings. Takes two minutes."
+#: .\pinmok\content\templates\content\welcome.html:185
+msgid ""
+"Configure your site name, logo, and contact info in Site Settings. Takes two "
+"minutes."
 msgstr "在站点设置中，设置好名称、Logo和联系方式，两分钟搞定。"
 
-#: .\pinmok\content\templates\content\welcome.html:197
+#: .\pinmok\content\templates\content\welcome.html:194
 msgid "Start publishing"
 msgstr "开始发布内容"
 
-#: .\pinmok\content\templates\content\welcome.html:199
+#: .\pinmok\content\templates\content\welcome.html:196
 msgid ""
 "Create categories, write articles, build pages. Everything you need is "
 "already there."
 msgstr "分类、文章、页面，想要的都有，直接用就行。"
 
-#: .\pinmok\content\templates\content\welcome.html:221
+#: .\pinmok\content\templates\content\welcome.html:218
 msgid "Up and running in minutes"
 msgstr "几分钟内上手"
 
-#: .\pinmok\content\templates\content\welcome.html:223
+#: .\pinmok\content\templates\content\welcome.html:220
 msgid ""
 "No boilerplate, no guesswork. A conventional project structure means you "
 "write your first feature on day one, not after a week of setup."
 msgstr "约定优于配置，开箱即用。第一天就能写业务，不用在环境搭建上浪费时间。"
 
-#: .\pinmok\content\templates\content\welcome.html:240
+#: .\pinmok\content\templates\content\welcome.html:237
 msgid "Grows with your project"
 msgstr "与项目共同成长"
 
-#: .\pinmok\content\templates\content\welcome.html:242
+#: .\pinmok\content\templates\content\welcome.html:239
 msgid ""
-"Enable only what you need. Every feature is self-contained and replaceable —"
-" scale from a simple blog to a full-featured platform without rethinking "
-"your architecture."
+"Enable only what you need. Every feature is self-contained and replaceable — "
+"scale from a simple blog to a full-featured platform without rethinking your "
+"architecture."
 msgstr "按需启用，功能独立可替换，从简单博客到完整平台，架构从不是瓶颈。"
 
-#: .\pinmok\content\templates\content\welcome.html:263
+#: .\pinmok\content\templates\content\welcome.html:260
 msgid "Ready for a global audience"
 msgstr "面向全球用户"
 
-#: .\pinmok\content\templates\content\welcome.html:265
+#: .\pinmok\content\templates\content\welcome.html:262
 msgid ""
 "Multilingual content and interface support is built in from day one. "
 "Reaching new markets doesn't mean rewriting your codebase."
 msgstr "原生支持多语言，开拓国际市场无需多写一行代码。"
 
-#: .\pinmok\content\templates\content\welcome.html:294
+#: .\pinmok\content\templates\content\welcome.html:281
+msgid "License"
+msgstr ""
+
+#: .\pinmok\content\templates\content\welcome.html:291
 msgid "All rights reserved."
 msgstr "版权所有"
 
-#: .\pinmok\content\templatetags\content_tags.py:35
+#: .\pinmok\content\templatetags\content_tags.py:45
 msgid "New"
 msgstr "新建"
 
-#: .\pinmok\content\views.py:31
+#: .\pinmok\content\views.py:32
 msgid "No active theme."
 msgstr "没有生效的主题"
 
-#: .\pinmok\content\views.py:62
+#: .\pinmok\content\views.py:63
 msgid "Category not found."
 msgstr "未找到分类"
 
-#: .\pinmok\content\views.py:81
+#: .\pinmok\content\views.py:74
 msgid "Article not found."
 msgstr "未找到文章"
 
-#: .\pinmok\content\views.py:94
+#: .\pinmok\content\views.py:86
 msgid "Page not found."
 msgstr "未找到单页"
 
-#: .\pinmok\content\admin.py:182
-msgid "Retract selected articles"
-msgstr "撤回所选的文章"
+msgid "Content Management"
+msgstr "内容管理"
 
-#: .\pinmok\content\admin.py:190
-msgid "%d articles retracted."
-msgstr "%d 篇文章已撤回。"
+msgid "Select Category"
+msgstr "选择分类"
+
+msgid "language"
+msgstr "语言"

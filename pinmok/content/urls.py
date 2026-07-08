@@ -11,14 +11,22 @@ Created:
   2026/01/19
 """
 
-from django.urls import path
+from django.urls import path, include
 
-from pinmok.content import views
+from pinmok.content import api, views
 from pinmok.content.enums import TemplateAction
 
+api_urlpatterns = [
+    path('list/', api.article_list),
+    path('article/<uuid:uuid>/', api.article_detail),
+    path('pages/<uuid:uuid>/', api.page_detail),
+    path('categories/', api.category_list),
+    path('categories/<uuid:uuid>/', api.category_detail),
+]
 urlpatterns = [
     path('', views.index_view, name=TemplateAction.INDEX),
     path('list/<uuid:uuid>/', views.category_list_view, name=TemplateAction.LIST),
     path('article/<uuid:uuid>/', views.article_detail_view, name=TemplateAction.ARTICLE),
     path('page/<uuid:uuid>/', views.page_detail_view, name=TemplateAction.PAGE),
+    path('api/', include(api_urlpatterns)),
 ]

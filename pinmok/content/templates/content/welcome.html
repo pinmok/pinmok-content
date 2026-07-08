@@ -118,10 +118,7 @@
         <div class="container-xl">
             <div class="navbar-brand navbar-brand-autodark pe-0 pe-md-3 mb-0">
                 <a href="/" aria-label="Pinmok" class="d-flex align-items-center gap-2 text-reset text-decoration-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" class="navbar-brand-image">
-                        <path fill="#09F" d="M300 600H0V300C0 134 134 0 300 0h300v300c0 166-134 300-300 300z"></path>
-                        <path fill="#FFF" d="M389 345a100 100 0 1 1 0-90l90-44a200 200 0 1 0 0 178l-90-44z"></path>
-                    </svg>
+                    <img src="{% static 'content/img/pinmok.svg' %}" class="navbar-brand-image" alt="Pinmok">
                     <span class="fw-bold">Pinmok</span>
                 </a>
             </div>
@@ -289,9 +286,7 @@
                 <div class="col-12 col-lg-auto mt-3 mt-lg-0">
                     <ul class="list-inline list-inline-dots mb-0">
                         <li class="list-inline-item">
-                            Copyright &copy; 2025&ndash;{% now "Y" %}
-                            <a href="https://www.qdcrazy.cn" class="link-secondary" target="_blank">Pinmok</a>.
-                            {% translate "All rights reserved." %}
+                            <a href="https://www.pinmok.com" class="link-secondary" target="_blank">Pinmok</a>
                         </li>
                     </ul>
                 </div>

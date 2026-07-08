@@ -25,12 +25,12 @@ from pinmok.content.service.frontend import ArticleFrontendService, CategoryFron
 from pinmok.padmin.service.theme import ThemeService
 
 
-def _theme_render(request, action: TemplateAction, filename: str, context: dict = None):
+def _theme_render(request, filename: str, context: dict = None):
     """Resolve template path, inject theme vars, and render."""
     template_path = ThemeService.get_template_path(ContentConfig.label, filename)
     if template_path is None:
         raise Http404(_('No active theme.'))
-    ctx = ThemeService.get_vars_context(ContentConfig.label, action)
+    ctx = ThemeService.get_vars_context(ContentConfig.label, filename)
     if context:
         ctx.update(context)
     return render(request, template_path, ctx)
@@ -62,9 +62,7 @@ def category_list_view(request, uuid: UUID):
     if category is None:
         raise Http404(_('Category not found.'))
 
-    return _theme_render(request, TemplateAction.LIST, category.template, {
-        'category': category,
-    })
+    return _theme_render(request, category.template, {'category': category})
 
 
 def article_detail_view(request, uuid: UUID):
@@ -74,7 +72,7 @@ def article_detail_view(request, uuid: UUID):
     article = ArticleFrontendService.get_article_by_uuid(uuid)
     if article is None:
         raise Http404(_('Article not found.'))
-    return _theme_render(request, TemplateAction.ARTICLE, article.template, {'article': article})
+    return _theme_render(request, article.template, {'article': article})
 
 
 def page_detail_view(request, uuid: UUID):
@@ -86,4 +84,4 @@ def page_detail_view(request, uuid: UUID):
     page = ArticleFrontendService.get_article_by_uuid(uuid)
     if page is None:
         raise Http404(_('Page not found.'))
-    return _theme_render(request, TemplateAction.PAGE, page.template, {'page': page})
+    return _theme_render(request, page.template, {'page': page})

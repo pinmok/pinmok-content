@@ -26,9 +26,8 @@ from pinmok.content.enums import ArticleStatus, ArticleType, ArticleSubmitAction
 from pinmok.content.models import Article, ArticleResource, ArticleTranslation, Page, Category, CategoryTranslation
 from pinmok.content.service.article import ArticleService
 from pinmok.content.service.category import CategoryService
-from pinmok.padmin.admin import PinmokModelAdmin
 from pinmok.padmin.fields import IndentedModelChoiceField
-from pinmok.padmin.options import PinmokStackedInline, PinmokTabularInline
+from pinmok.padmin.options import PinmokModelAdmin, PinmokStackedInline, PinmokTabularInline
 from pinmok.padmin.service.theme import ThemeService
 from pinmok.padmin.widgets import PinmokSelect, PinmokSwitch
 
@@ -43,7 +42,7 @@ class CategoryTranslationInline(PinmokStackedInline):
 
 @padmin.register(Category)
 class CategoryAdmin(PinmokModelAdmin):
-    menu_order = 3000
+    menu_sort_order = 3000
     inlines = [CategoryTranslationInline]
     list_display = ['sort_order', 'get_name', 'get_cover', 'parent', 'is_active']
     list_editable = ['is_active', 'sort_order']
@@ -137,7 +136,7 @@ class ArticleTranslationInline(PinmokStackedInline):
 class ArticleAdmin(PinmokModelAdmin):
     back_url = reverse_lazy('admin:content_article_changelist')
     change_form_template = 'content/articles.html'
-    menu_order = 1000
+    menu_sort_order = 1000
     image_crop_fields = [{'cover': {'aspectRatio': '4:3'}}]
 
     formfield_overrides = {
@@ -277,7 +276,7 @@ class PageAdmin(ArticleAdmin):
     Admin for Page type articles.
     No categories; slug required for URL routing.
     """
-    menu_order = 2000
+    menu_sort_order = 2000
     fields = ['cover', 'template', 'sort_order', 'extra']
     list_display = ['get_title', 'status_display', 'published_at']
     list_editable = []
