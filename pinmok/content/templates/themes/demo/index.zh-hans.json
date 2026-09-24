@@ -1,0 +1,50 @@
+{
+  "name": "主页",
+  "action": "index",
+  "fieldsets": {
+    "hero": {
+      "title": "幻灯片",
+      "vars": {
+        "group": {
+          "title": "分组",
+          "type": "text"
+        },
+        "num": {
+          "title": "展示数量",
+          "type": "number",
+          "default": 3
+        }
+      }
+    },
+    "news": {
+      "title": "新闻栏",
+      "vars": {
+        "category": {
+          "title": "文章类别",
+          "type": "datasource",
+          "source": "category"
+        },
+        "count": {
+          "title": "显示数量",
+          "type": "number",
+          "default": 4
+        }
+      }
+    },
+    "products": {
+      "title": "产品",
+      "vars": {
+        "category": {
+          "title": "文章类别",
+          "type": "datasource",
+          "source": "category"
+        },
+        "count": {
+          "title": "展示数量",
+          "type": "number",
+          "default": 4
+        }
+      }
+    }
+  }
+}

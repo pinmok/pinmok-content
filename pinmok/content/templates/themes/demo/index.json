@@ -1,0 +1,50 @@
+{
+  "name": "Home",
+  "action": "index",
+  "fieldsets": {
+    "hero": {
+      "title": "Slider",
+      "vars": {
+        "group": {
+          "title": "Slider Group",
+          "type": "text"
+        },
+        "num": {
+          "title": "Number of Sliders",
+          "type": "number",
+          "default": 3
+        }
+      }
+    },
+    "news": {
+      "title": "News",
+      "vars": {
+        "category": {
+          "title": "Category",
+          "type": "datasource",
+          "source": "category"
+        },
+        "count": {
+          "title": "Number of list",
+          "type": "number",
+          "default": 4
+        }
+      }
+    },
+    "products": {
+      "title": "Products",
+      "vars": {
+        "category": {
+          "title": "Category",
+          "type": "datasource",
+          "source": "category"
+        },
+        "count": {
+          "title": "Number of Product",
+          "type": "number",
+          "default": 4
+        }
+      }
+    }
+  }
+}

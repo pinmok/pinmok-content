@@ -1,0 +1,39 @@
+{% extends 'themes/demo/public/base.html' %}
+{% load pinmok_tags content_tags %}
+
+{% block title %}{{ category.translation.title }}{% endblock %}
+
+{% block body %}
+    {# The list page header, which uses the context provided by the view directly. #}
+    <header class="page-header">
+        <div class="container">
+            <h1>{{ category.translation.title }}</h1>
+            <p>
+                <span><img src="{% media_url category.cover %}" alt="{{ category.translation.title }}"></span>
+                {{ category.translation.description }}
+            </p>
+        </div>
+    </header>
+
+    {# Use the "articles" tag to fetch the article list and paginate it using the "page" parameter provided by the view. #}
+    {% articles category=category.uuid page_num=page page_size=12 as arts %}
+    <main class="article-list">
+        <div class="container">
+            {% if arts %}
+                {% for art in arts %}
+                    <article class="article-item">
+                        <h2><a href="{% url 'article' art.uuid %}">{{ art.translation.title }}</a></h2>
+                        <p class="article-subtitle">{{ art.translation.subtitle }}</p>
+                        <time>{{ art.published_at }}</time>
+                    </article>
+                {% endfor %}
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    {# Generate pagination using the default CSS classes, with the relevant styles provided in the CSS file. #}
+                    {% pagination arts %}
+                </div>
+            {% endif %}
+        </div>
+    </main>
+{% endblock %}

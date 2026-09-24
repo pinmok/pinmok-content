@@ -1,0 +1,21 @@
+{
+  "name": "Demo Theme",
+  "app_label": "content",
+  "version": "1.0.0",
+  "author": "惠达浪",
+  "description": "极简演示主题，展示核心功能。",
+  "vars": {
+    "company_name": {
+      "title": "公司名称",
+      "type": "text",
+      "default": "",
+      "tip": "用来在标题栏上显示的企业名称。"
+    },
+    "nav_group": {
+      "title": "导航分组",
+      "type": "text",
+      "default": "main",
+      "tip": "导航分组名称"
+    }
+  }
+}

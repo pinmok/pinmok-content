@@ -1,0 +1,21 @@
+{
+  "name": "Demo Theme",
+  "app_label": "content",
+  "version": "1.0.0",
+  "author": "惠达浪",
+  "description": "A minimalist presentation theme showcasing core features.",
+  "vars": {
+    "company_name": {
+      "title": "Company Name",
+      "type": "text",
+      "default": "",
+      "tip": "Company name to be displayed in the title bar."
+    },
+    "nav_group": {
+      "title": "Navigation Group",
+      "type": "text",
+      "default": "main",
+      "tip": "Name of the navigation group."
+    }
+  }
+}

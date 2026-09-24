@@ -1,0 +1,31 @@
+{% extends 'themes/demo/public/base.html' %}
+{% load i18n pinmok_tags %}
+
+{% block title %}{{ article.translation.title }}{% endblock %}
+
+{% block body %}
+    <main class="article-detail">
+        <div class="container">
+            <article>
+                <header class="article-header">
+                    <h1>{{ article.translation.title }}</h1>
+                    <p class="article-subtitle">{{ article.translation.subtitle }}</p>
+                    <time>{{ article.published_at }}</time>
+                </header>
+                <div class="article-content">
+                    {{ article.translation.content|safe }}
+                </div>
+
+                {# Just an example gallery; other resources are similar. See the documentation. #}
+                {% if article.gallery %}
+                    <div class="gallery">
+                        {% for res in article.gallery %}
+                            {% media_url res.resource.url as img_url %}
+                            <img src="{{ img_url }}" alt="{{ res.alt }}">
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </article>
+        </div>
+    </main>
+{% endblock %}

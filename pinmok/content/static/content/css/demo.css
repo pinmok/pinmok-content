@@ -1,0 +1,476 @@
+/* ===== 全局样式 ===== */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --light-gray: #ecf0f1;
+    --dark-gray: #333;
+    --medium-gray: #7f8c8d;
+    --white: #ffffff;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--dark-gray);
+    background-color: var(--white);
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ===== 导航菜单 ===== */
+.navbar {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--white);
+    text-decoration: none;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: var(--white);
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: var(--border-radius);
+    transition: background-color 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    background-color: var(--secondary-color);
+}
+
+.language-switcher {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.language-button {
+    margin-left: 5px;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    background: #fff;
+    cursor: pointer;
+}
+
+.language-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 120px;
+    padding: 4px 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .1);
+    z-index: 1000;
+}
+
+.language-switcher:hover .language-menu {
+    display: block;
+}
+
+.language-menu form {
+    margin: 0;
+}
+
+.language-menu button {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    border: 0;
+    background: none;
+    color: #333;
+    text-align: left;
+    cursor: pointer;
+}
+
+.language-menu button:hover {
+    background: #f5f5f5;
+}
+
+/* ===== Hero 轮播图 ===== */
+.hero {
+    padding: 40px 0;
+    background-color: var(--light-gray);
+}
+
+.carousel {
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.carousel-item {
+    text-align: center;
+}
+
+.carousel-item img {
+    display: block;
+    margin: 0 auto;
+}
+
+.carousel-item h2 {
+    margin-bottom: 10px;
+}
+
+.carousel-item p {
+    margin: 0;
+}
+
+/* 自动切换动画 */
+.carousel-item img {
+    max-width: 100%;
+}
+
+/* ===== 分类区块 ===== */
+.category-section {
+    padding: 40px 0;
+}
+
+.category-block {
+    margin-bottom: 40px;
+}
+
+.category-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.category-title span {
+    font-size: 24px;
+    color: var(--primary-color);
+}
+
+.more-link {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.more-link:hover {
+    text-decoration: underline;
+}
+
+.article-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.article-card {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.article-cover {
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--light-gray);
+    color: var(--medium-gray);
+    font-size: 14px;
+}
+
+.article-card h3 {
+    padding: 15px;
+    font-size: 18px;
+}
+
+.article-card h3 a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.article-card h3 a:hover {
+    text-decoration: underline;
+}
+
+.article-card time {
+    display: block;
+    padding: 0 15px 15px;
+    font-size: 14px;
+    color: var(--medium-gray);
+}
+
+/* ===== 页面标题 ===== */
+.page-header {
+    padding: 40px 0;
+    text-align: center;
+    background-color: var(--light-gray);
+}
+
+.page-header h1 {
+    font-size: 32px;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.page-header p {
+    font-size: 18px;
+    color: var(--medium-gray);
+}
+
+/* ===== 文章列表 ===== */
+.article-list {
+    padding: 40px 0;
+}
+
+.article-item {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.article-item:last-child {
+    border-bottom: none;
+}
+
+.article-item h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.article-item h2 a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.article-item h2 a:hover {
+    text-decoration: underline;
+}
+
+.article-subtitle {
+    font-size: 16px;
+    color: var(--medium-gray);
+    margin-bottom: 10px;
+}
+
+.article-item time {
+    font-size: 14px;
+    color: var(--medium-gray);
+}
+
+/* ===== 分页 ===== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+}
+
+.page-btn {
+    display: inline-block;
+    padding: 8px 15px;
+    border: 1px solid var(--light-gray);
+    border-radius: var(--border-radius);
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.page-btn:hover:not(.disabled):not(.active) {
+    background-color: var(--light-gray);
+}
+
+.page-btn.active {
+    background-color: var(--secondary-color);
+    color: var(--white);
+    border-color: var(--secondary-color);
+}
+
+.page-btn.disabled {
+    color: var(--medium-gray);
+    cursor: not-allowed;
+}
+
+.page-dots {
+    color: var(--medium-gray);
+}
+
+/* ===== 文章详情 ===== */
+.article-detail {
+    padding: 40px 0;
+}
+
+.article-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.article-header h1 {
+    font-size: 32px;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.article-subtitle {
+    font-size: 18px;
+    color: var(--medium-gray);
+    margin-bottom: 10px;
+}
+
+.article-header time {
+    font-size: 14px;
+    color: var(--medium-gray);
+}
+
+.article-content {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.8;
+}
+
+.article-content p {
+    margin-bottom: 20px;
+}
+
+.article-content code {
+    background-color: var(--light-gray);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+article .gallery img {
+    width: 200px;
+}
+
+/* ===== 页脚 ===== */
+.footer {
+    background-color: var(--primary-color);
+    color: var(--white);
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+}
+
+
+/* ===== 响应式设计 ===== */
+@media (max-width: 768px) {
+    .navbar .container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .nav-links {
+        gap: 10px;
+    }
+
+    .carousel {
+        height: 300px;
+    }
+
+    .carousel-item h2 {
+        font-size: 24px;
+    }
+
+    .article-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
+    .article-card h3 {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .article-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+    }
+}
+
+/* ===== 分页 ===== */
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 20px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.page-item {
+    margin: 0;
+}
+
+.page-link {
+    display: block;
+    min-width: 36px;
+    padding: 7px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    color: #333;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.page-link:hover {
+    background: #f5f5f5;
+}
+
+.page-item.active .page-link {
+    background: #333;
+    border-color: #333;
+    color: #fff;
+}
+
+.page-item.disabled .page-link {
+    color: #aaa;
+    background: #f5f5f5;
+    cursor: default;
+}

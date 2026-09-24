@@ -15,6 +15,7 @@ from django.contrib import messages, admin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Case, When, IntegerField
 from django.db.models.fields import BooleanField
+from django.http.request import HttpRequest
 from django.urls import reverse_lazy
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -84,7 +85,8 @@ class CategoryAdmin(PinmokModelAdmin):
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == 'template':
-            kwargs['widget'] = PinmokSelect(choices=ThemeService.get_template_choices(ContentConfig.label, TemplateAction.LIST))
+            kwargs['widget'] = PinmokSelect(
+                choices=ThemeService.get_template_choices(ContentConfig.label, TemplateAction.LIST))
         return super().formfield_for_dbfield(db_field, request, **kwargs)
 
     def get_queryset(self, request):
@@ -189,7 +191,7 @@ class ArticleAdmin(PinmokModelAdmin):
     def has_add_permission(self, request):
         return super().has_add_permission(request) and request.user.has_perm(Article.PERM_WRITE)
 
-    def has_change_permission(self, request, obj: Article | None = None):
+    def has_change_permission(self, request: HttpRequest, obj: Article | None = None):
         if not super().has_change_permission(request, obj):
             return False
         return request.user.has_perm(Article.PERM_WRITE)
@@ -266,7 +268,8 @@ class ArticleAdmin(PinmokModelAdmin):
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         if db_field.name == 'template':
-            kwargs['widget'] = PinmokSelect(choices=ThemeService.get_template_choices(ContentConfig.label, TemplateAction.ARTICLE))
+            kwargs['widget'] = PinmokSelect(
+                choices=ThemeService.get_template_choices(ContentConfig.label, TemplateAction.ARTICLE))
         return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 

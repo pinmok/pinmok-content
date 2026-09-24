@@ -25,7 +25,7 @@ from pinmok.content.service.frontend import ArticleFrontendService, CategoryFron
 from pinmok.padmin.service.theme import ThemeService
 
 
-def _theme_render(request, filename: str, context: dict = None):
+def _theme_render(request, filename: str, context: dict | None = None):
     """Resolve template path, inject theme vars, and render."""
     template_path = ThemeService.get_template_path(ContentConfig.label, filename)
     if template_path is None:
@@ -53,16 +53,17 @@ def index_view(request):
     return render(request, template, ctx)
 
 
-def category_list_view(request, uuid: UUID):
+def articles_list_view(request, uuid: UUID):
     """
     Article list view for a specific category.
     Reads ?page= from query string for pagination.
     """
+    page = request.GET.get('page', 1)
     category = CategoryFrontendService.get_category_by_uuid(uuid)
     if category is None:
         raise Http404(_('Category not found.'))
 
-    return _theme_render(request, category.template, {'category': category})
+    return _theme_render(request, category.template, {'category': category, 'page': page})
 
 
 def article_detail_view(request, uuid: UUID):

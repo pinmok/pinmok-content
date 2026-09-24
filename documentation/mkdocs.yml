@@ -1,0 +1,69 @@
+# Site information
+site_name: Pinmok Content Documentation
+site_url: https://apps.pinmok.com/content
+site_author: 惠达浪
+docs_dir: docs
+
+# Repository
+repo_url: https://github.com/pinmok/pinmok-content
+repo_name: pinmok/pinmok-content
+
+# Copyright
+copyright: Copyright &copy; 2025 - 2026 <a href="https://www.qdcrazy.cn" target="_blank">惠达浪</a> All right reserved.
+
+# Configuration
+theme:
+  name: material
+  custom_dir: overrides
+  language: zh
+  logo: assets/images/pinmok.bg.svg
+  favicon: assets/images/favicon.png
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - toc.follow
+    - toc.integrate
+    - search.highlight
+  palette:
+    primary: indigo
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - attr_list
+
+extra:
+  generator: false
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Content Management: management.md
+  - Theme Development: theme-dev.md
+  - API Usage: api.md
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: folder
+      languages:
+        - locale: en
+          name: English
+          theme:
+            palette:
+              primary: blue
+        - locale: zh
+          name: 简体中文
+          default: true
+          site_name: Pinmok Content 文档
+          nav_translations:
+            Home: 首页
+            Getting Started: 入门指南
+            Content Management: 内容管理
+            Theme Development: 主题开发
+            API Usage: API 使用

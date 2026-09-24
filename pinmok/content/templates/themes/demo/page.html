@@ -1,0 +1,22 @@
+{% extends 'themes/demo/public/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page.translation.title }}{% endblock %}
+
+{# Same as the article detail page, except the context variable name is changed to "page". #}
+{% block body %}
+    <main class="article-detail">
+        <div class="container">
+            <article>
+                <header class="article-header">
+                    <h1>{{ page.translation.title }}</h1>
+                    <p class="article-subtitle">{{ page.translation.subtitle }}</p>
+                    <time>{% translate 'Published at:' %}{{ page.translation.published_at }}</time>
+                </header>
+                <div class="article-content">
+                    {{ page.content|safe }}
+                </div>
+            </article>
+        </div>
+    </main>
+{% endblock %}

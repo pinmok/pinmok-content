@@ -118,6 +118,16 @@ def articles_tag(
             )
             return articles
 
+        try:
+            page_num = max(1, int(page_num))
+        except (TypeError, ValueError):
+            page_num = 1
+
+        try:
+            page_size = max(1, int(page_size))
+        except (TypeError, ValueError):
+            page_size = 10
+
         return ArticleFrontendService.get_article_list(
             category=category_uuids,
             page_number=page_num,

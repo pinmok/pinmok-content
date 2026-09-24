@@ -1,0 +1,40 @@
+{% extends 'themes/demo/public/base.html' %}
+{% load pinmok_tags content_tags %}
+
+{% block title %}{{ category.translation.title }}{% endblock %}
+
+{% block body %}
+    <header class="page-header">
+        <div class="container">
+            <h1>{{ category.translation.title }}</h1>
+            <p>
+                <span><img src="{{ category.cover.url }}" alt="{{ category.translation.title }}"></span>
+                {{ category.translation.description }}
+            </p>
+        </div>
+    </header>
+
+    {% articles category=category.uuid page_size=15 as arts %}
+    <main class="article-list">
+        <div class="container">
+            {% if arts %}
+                <div class="article-grid">
+                    {% for art in arts %}
+                        <article class="article-card">
+                            <div class="article-cover">
+                                <img src="{{ art.cover.url }}" alt="{{ art.translation.title }}">
+                            </div>
+                            <h3><a href="{% url 'article' art.uuid %}">{{ art.translation.title }}</a></h3>
+                            <time>{{ art.published_at }}</time>
+                        </article>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    {% pagination arts %}
+                </div>
+            {% endif %}
+        </div>
+    </main>
+{% endblock %}

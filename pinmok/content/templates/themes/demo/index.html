@@ -1,0 +1,91 @@
+{% extends 'themes/demo/public/base.html' %}
+{% load i18n pinmok_tags content_tags %}
+
+{% block body %}
+    {# "hero.group" is a custom datasource variable defined in the template configuration file. #}
+    {% if hero.group %}
+        {# Carousel example; this tag comes from pinmok_tag. #}
+        {% slider hero.group as slides %}
+        <section class="hero">
+            <div class="container">
+                <div class="carousel">
+                    {% for slide in slides %}
+                        <div class="carousel-item" {% if not forloop.first %}hidden{% endif %}>
+                            <img src="{% media_url slide.image %}" alt="{{ slide.title }}">
+                            <h2>{{ slide.title }}</h2>
+                            <p>{{ slide.subtitle }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <script>
+            // JavaScript code that controls the carousel.
+            const slides = document.querySelectorAll('.carousel-item');
+            let current  = 0;
+            setInterval(() => {
+                slides[current].hidden = true;
+                current                = (current + 1) % slides.length;
+                slides[current].hidden = false;
+            }, 3000); </script>
+    {% endif %}
+
+    <section class="category-section">
+        <div class="container">
+            {# Check whether a valid value has been set. #}
+            {% if news.category %}
+
+                {# Use a tag to retrieve the category information and assign it to a custom variable. #}
+                {% category news.category as cat %}
+
+                <div class="category-block">
+                    <h2 class="category-title">
+                        <span>{{ cat.translation.name }}</span>
+                        <a href="{% url 'list' news.category %}" class="more-link">{% translate 'more' %} &rarr;</a>
+                    </h2>
+
+                    {# Retrieve the article list, limited to only 4 records. #}
+                    {% articles category=news.category limit=4 order="-published_at" as news %}
+
+                    <div class="article-grid">
+                        {# Iterate over and display the article list. #}
+                        {% for art in news %}
+                            <article class="article-card">
+                                <div class="article-cover" style="background-color: #ecf0f1;">
+                                    <span><img src="{% media_url art.cover %}" alt="{{ art.translation.title }}"></span>
+                                </div>
+                                <h3><a href="{% url 'article' art.uuid %}">{{ art.translation.title }}</a></h3>
+                                <time>{{ art.published_at }}</time>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if products.category %}
+                {% category products.category as pro %}
+                <div class="category-block">
+                    <h2 class="category-title">
+                        <span>{{ pro.translation.name }}</span>
+                        <a href="{% url 'list' products.category %}" class="more-link">{% translate 'more' %}&rarr;</a>
+                    </h2>
+                    {% articles category=products.category limit=4 as products %}
+                    <div class="article-grid">
+                        {% for product in products %}
+                            <article class="article-card">
+                                <div class="article-cover" style="background-color: #ecf0f1;">
+                                    <span>
+                                        <img src="{% media_url product.cover %}" alt="{{ product.translation.title }}">
+                                    </span>
+                                </div>
+                                <h3><a href="{% url 'article' product.uuid %}">{{ product.translation.title }}</a></h3>
+                                <time>{{ product.published_at }}</time>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

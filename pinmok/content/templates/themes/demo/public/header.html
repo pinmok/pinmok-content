@@ -1,0 +1,40 @@
+{% load i18n pinmok_tags %}
+
+<nav class="navbar">
+    <div class="container">
+        <a href="/" class="logo">{{ company_name|default:'Pinmok' }}</a>
+        <ul class="nav-links">
+            <li><a href="/" class="active">{% translate 'Home' %}</a></li>
+            {# A simplified navigation example. It only parses and renders the top-level navigation; #}
+            {# in a real-world scenario, you'd need to handle item.children as well. #}
+            {% navigation nav_group %}
+                {% navblock 1 %}
+                    <li><a href="{{ item.url }}">{{ item.name }}</a></li>
+                {% endnavblock %}
+            {% endnavigation %}
+        </ul>
+
+        {# Multi-language support. Example of switching languages.#}
+        {% get_current_language as LANGUAGE_CODE %}
+        {% get_available_languages as LANGUAGES %}
+        {% get_language_info_list for LANGUAGES as languages %}
+        {% get_language_info for LANGUAGE_CODE as language_info %}
+
+        <div class="language-switcher">
+            {% icon 'tabler-language' %}
+            <button class="language-button">
+                {{ language_info.name_local }} ▾
+            </button>
+
+            <div class="language-menu">
+                {% for language in languages %}
+                    <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                        <button name="language" value="{{ language.code }}">{{ language.name_local }}</button>
+                    </form>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</nav>

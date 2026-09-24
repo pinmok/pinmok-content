@@ -29,7 +29,7 @@ from pinmok.content.models import Article, Category
 # Cache
 # ---------------------------------------------------------------------------
 
-_CACHE_MISS = object()  # sentinel: distinguishes "not cached" from cached None/[]
+_CACHE_MISS = '__CACHE_MISS__'  # sentinel: distinguishes "not cached" from cached None/[]
 
 
 class FrontendCache:
@@ -48,7 +48,7 @@ class FrontendCache:
         Uses a sentinel to correctly cache falsy values (None, [], False, 0).
         """
         result = cache.get(key, _CACHE_MISS)
-        if result is _CACHE_MISS:
+        if result == _CACHE_MISS:
             result = func()
             cache.set(key, result, cls.TTL)
         return result
@@ -86,7 +86,7 @@ class ArticleFrontendService:
             try:
                 art = (
                     cls._base_qs()
-                    .prefetch_related('article_resources__resource')
+                    .prefetch_related('article_resources__resource', 'categories')
                     .filter(uuid=uuid, type=article_type)
                     .get()
                 )
@@ -129,6 +129,7 @@ class ArticleFrontendService:
         Returns:
             A plain list when limit is set, otherwise a Django Page object.
         """
+        category = category or []
         order_by = order_by or ['-published_at']
         cat_key = ','.join(str(u) for u in category if u)
         order_key = ','.join(order_by)
@@ -201,7 +202,7 @@ class CategoryFrontendService:
     def _base_qs(cls) -> QuerySet:
         """Base queryset: active categories with translations prefetched."""
         return Category.with_translations(
-            Category.objects.filter(is_active=True)
+            Category.objects.filter(is_active=True).select_related('parent')
         )
 
     @classmethod

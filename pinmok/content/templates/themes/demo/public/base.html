@@ -1,0 +1,20 @@
+{#Site-wide base template, used for other sub-templates to inherit from.#}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'content/css/demo.css' %}">
+    <title>{% block title %}CMS Demo{% endblock %}</title>
+</head>
+<body>
+{#Base layout, including header and footer templates.#}
+{% include "themes/demo/public/header.html" %}
+
+{% block body %}{% endblock %}
+
+{% include "themes/demo/public/footer.html" %}
+</body>
+</html>

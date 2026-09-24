@@ -15,6 +15,7 @@ Created:
 """
 from uuid import UUID
 
+from django.core.files.storage import default_storage
 from django.http import HttpRequest
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_GET
@@ -41,8 +42,31 @@ ALLOWED_ORDER_FIELDS = {
 
 def _safe_url(field) -> str:
     """Return field.url safely, or '' if the file is missing or field is empty."""
+    if not field:
+        return ''
+
     try:
-        return field.url if field else ''
+        # Case 1: Django's ImageField/FileField (FieldFile instance)
+        # It has a 'field' attribute pointing to the Field definition
+        # field.url already includes MEDIA_URL prefix
+        if hasattr(field, 'field'):
+            return field.url or ''
+
+        # Case 2: Resource instance or plain string
+        if hasattr(field, 'url'):
+            path_val = field.url
+        else:
+            path_val = str(field)
+
+        if not path_val:
+            return ''
+
+        # External full URL: return as-is
+        if path_val.startswith(('http://', 'https://', '//')):
+            return path_val
+
+        # Relative path: resolve via storage backend (auto-prepend MEDIA_URL)
+        return default_storage.url(path_val)
     except (ValueError, FileNotFoundError):
         return ''
 
@@ -75,7 +99,7 @@ def _serialize_article_summary(art: Article) -> dict:
         'is_top': art.is_top,
         'is_recommended': art.is_recommended,
         'published_at': art.published_at.isoformat() if art.published_at else None,
-        'categories': [str(c.uuid) for c in art.categories.all().only('uuid')],
+        'categories': [str(c.uuid) for c in art.categories.all()],
     }
 
 
@@ -83,24 +107,24 @@ def _serialize_article_detail(art: Article) -> dict:
     """Serialize an Article instance to a full detail dict."""
     translation = art.translation
     data = _serialize_article_summary(art)
+
+    def _serialize_resources(usage_key: str) -> list:
+        """Serialize a list of ArticleResource objects by usage type."""
+        return [
+            {
+                'url': _safe_url(r.resource),
+                'original_name': r.resource.original_name,
+                'alt': r.alt,
+            }
+            for r in getattr(art, usage_key, [])
+        ]
+
     data.update({
         'content': translation.content if translation else '',
-        'gallery': [
-            {'url': _safe_url(r.resource.file), 'title': r.resource.title}
-            for r in getattr(art, 'gallery', [])
-        ],
-        'attachments': [
-            {'url': _safe_url(r.resource.file), 'name': r.resource.title}
-            for r in getattr(art, 'attachments', [])
-        ],
-        'videos': [
-            {'url': _safe_url(r.resource.file), 'title': r.resource.title}
-            for r in getattr(art, 'videos', [])
-        ],
-        'audios': [
-            {'url': _safe_url(r.resource.file), 'title': r.resource.title}
-            for r in getattr(art, 'audios', [])
-        ],
+        'gallery': _serialize_resources('gallery'),
+        'attachments': _serialize_resources('attachments'),
+        'videos': _serialize_resources('videos'),
+        'audios': _serialize_resources('audios'),
     })
     return data
 
