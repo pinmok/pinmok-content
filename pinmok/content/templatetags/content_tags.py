@@ -19,7 +19,7 @@ from django.core.paginator import Page
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
-from pinmok.content.enums import ArticleStatus
+from pinmok.content.enums import ArticleStatus, ArticleType
 from pinmok.content.models import Article, Category
 from pinmok.content.service.frontend import ArticleFrontendService, CategoryFrontendService
 from project_settings import settings
@@ -142,7 +142,7 @@ def articles_tag(
         return []
 
 
-@register.simple_tag(name='article')
+@register.simple_tag(name='page')
 def article_tag(uuid: UUID) -> Article | None:
     """
     Return a single published article by UUID, or None if not found.
@@ -156,14 +156,11 @@ def article_tag(uuid: UUID) -> Article | None:
     try:
         art_id = _to_uuid(uuid)
         if art_id is not None:
-            return ArticleFrontendService.get_article_by_uuid(art_id)
+            return ArticleFrontendService.get_article_by_uuid(art_id, ArticleType.PAGE)
     except ValidationError as e:
         if settings.DEBUG:
             raise e
         return None
-
-
-register.simple_tag(name='page')(article_tag)
 
 
 @register.simple_tag(name='category')
