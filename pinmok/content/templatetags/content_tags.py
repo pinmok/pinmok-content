@@ -14,6 +14,7 @@ Created:
 from uuid import UUID
 
 from django import template
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.paginator import Page
 from django.utils.safestring import mark_safe
@@ -22,7 +23,6 @@ from django.utils.translation import gettext as _
 from pinmok.content.enums import ArticleStatus, ArticleType
 from pinmok.content.models import Article, Category
 from pinmok.content.service.frontend import ArticleFrontendService, CategoryFrontendService
-from project_settings import settings
 
 register = template.Library()
 

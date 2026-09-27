@@ -1,183 +1,183 @@
-# <img src="https://www.pinmok.com/assets/img/pinmok.bg.svg" height="60" alt="Pinmok"> Pinmok Content
+<p align="center">
+  <img src="https://www.pinmok.com/assets/img/pinmok.bg.svg" height="60" alt="Pinmok">
+</p>
 
-[![Python](https://img.shields.io/badge/Python-3.12+-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
+# Pinmok Content
+
+[![Python 3.12+](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](https://opensource.org/licenses/MIT)
+[![Pinmok 1.0+](https://img.shields.io/badge/Pinmok-1.0+-green.svg)](https://www.pinmok.com)
 
 [English](#english) | [简体中文](#简体中文)
 
 ---
 
+<a id="english"></a>
+
 ## English
 
-pinmok-content is the official content module for [Pinmok](https://www.pinmok.com), providing article, category, and page management, along
-with matching frontend display support.
-
-### Installation
-
-```bash
-pip install pinmok-content
-```
-
-### Quick Start
-
-**1. Add to `INSTALLED_APPS`**
-
-Add `pinmok.content` after `pinmok.padmin`.
-
-```python
-INSTALLED_APPS = [
-    ...
-    'pinmok.padmin',
-    'pinmok.content',  # must come after pinmok.padmin
-]
-```
-
-**2. Configure URLs**
-
-```python
-from django.urls import path, include
-
-urlpatterns = [
-    ...
-    path('', include('pinmok.content.urls')),
-]
-```
-
-**3. Run migrations**
-
-```bash
-python manage.py migrate
-```
-
-**4. Sync menus**
-
-After completing the steps above, a **Pinmok Content** menu item will automatically appear in the admin, with entries for articles,
-categories, and more underneath. At this point, the menu is auto-generated from the Django app name and has no icons. After running a menu
-sync, the menu will read from the configuration and correctly display localized names and icons.
+**Pinmok Content** is the official content management module for the [Pinmok](https://www.pinmok.com) framework. It provides article,
+category, and page management, along with frontend display support tailored for corporate websites, blogs, and small-to-medium content
+sites.
 
 ### Features
 
-#### Content Management
+- **Content Management**: Full admin support for Articles, Pages, and Categories, including multi-language translation, status workflows,
+  and multimedia assets.
+- **Theme-Driven Frontend**: Deeply integrated with the Pinmok theme system. Built-in template tags and a Data Source mechanism allow
+  frontend developers to build content-driven pages without writing backend Python code in most common scenarios.
+- **Independent Multimedia Resources**: Galleries, attachments, videos, and audios are stored independently from the main content, allowing
+  multiple language versions to share the same resource files.
+- **REST API**: Provides a built-in read-only REST API for content retrieval, supporting pagination, ordering, and filtering, suitable for
+  decoupled frontends or mini-programs.
 
-Full admin management for Articles, Pages, and Categories, with support for multi-language translation, status workflow (draft, in review,
-published, withdrawn), featured/pinned flags, and multimedia assets (images, attachments, video, audio).
+### Installation
 
-Pages share the same data structure as Articles and are suited for standalone static content that doesn't need to belong to a category.
+> **Prerequisite**: You must have the core `pinmok` framework installed first.
 
-#### Theme & Templates
-
-pinmok-content is fully integrated with the Pinmok theme system — the frontend is driven by theme templates. Built-in template tags cover
-common use cases like article lists, featured content, and category navigation, so theme developers can pull content straight into a
-template with a single tag — no backend code or Python required. Switching themes changes the entire site's appearance, while template tags
-keep the frontend fully decoupled from the backend. See the theme development docs for template tag usage and theme development.
-
-#### REST API
-
-pinmok-content ships with a built-in read-only REST API, suited for decoupled frontends, mini-programs, and similar scenarios. The API is
-mounted under the `/api/` prefix and provides endpoints for article list/detail, category list/detail, with support for common parameters
-like pagination, ordering, and category filtering, returning standard JSON.
-
-Authentication and rate limiting are left to be configured at the project level.
-
-### Requirements
-
-| Dependency | Version |
-|------------|---------|
-| Python     | >= 3.12 |
-| Pinmok     | >= 1.0  |
-
-The required Django version follows whatever Pinmok requires, so it isn't pinned separately here.
-
-### Contributing
-
-Issues and pull requests are welcome. If you find this project useful, a star on the repository goes a long way for an independently
-developed open-source project.
-
-- GitHub: [github.com/pinmok/pinmok-content](https://github.com/pinmok/pinmok-content)
-- Gitee: [gitee.com/pinmok/pinmok-content](https://gitee.com/pinmok/pinmok-content)
-
----
-
-## 简体中文
-
-pinmok-content 是 [Pinmok](https://www.pinmok.com) 的官方内容模块，提供文章、分类、页面等内容管理功能，以及配套的前端展示支持。
-
-### 安装
+**1. Install the package**
 
 ```bash
 pip install pinmok-content
 ```
 
-### 快速开始
-
-**1. 添加到 INSTALLED_APPS**
-
-将 `pinmok.content` 添加在 `padmin` 之后。
+**2. Add to `INSTALLED_APPS`**
+Add `pinmok.content` **after** `pinmok.padmin` in your `settings.py`:
 
 ```python
 INSTALLED_APPS = [
-    ...
     'pinmok.padmin',
-    'pinmok.content',  # 必须在 pinmok.padmin 之后
+    'pinmok.content',  # Must come after pinmok.padmin
+    ...
 ]
 ```
 
-**2. 配置 URL**
+**3. Configure URLs**
+Include the content URLs in your project's `urls.py`:
 
 ```python
 from django.urls import path, include
 
 urlpatterns = [
-    ...
+    ...,
     path('', include('pinmok.content.urls')),
 ]
 ```
 
-**3. 执行数据库迁移**
+**4. Run Migrations & Sync Menus**
 
 ```bash
 python manage.py migrate
 ```
 
-**4. 同步菜单**
+After running migrations, a "Pinmok Content" menu will appear in the admin panel. Run a menu sync (via admin dashboard or management
+command) to correctly display localized names and icons.
 
-完成以上步骤后，后台管理界面会自动出现 **Pinmok Content** 菜单项，文章、分类等管理入口在其下方。但此时菜单由 Django
-应用名自动生成，尚未包含图标。执行一次菜单同步后，菜单将从配置中读取，正确显示多语言名称及图标。
+### Quick Usage
 
-### 功能概览
+Once installed, you can fetch and display content directly in your Django templates using declarative tags:
 
-#### 内容管理
+```django
+{% load content_tags %}
 
-提供文章（Article）、页面（Page）、分类（Category）的完整后台管理，支持多语言翻译、状态流转（草稿、审核、发布、撤回）、文章置顶与推荐标记，
-以及图片、附件、视频、音频等多媒体资源管理。
+<!-- Fetch the latest 5 articles from a specific category -->
+{% articles category=category.uuid limit=5 as latest %}
 
-页面（Page）与文章共享相同的数据结构，适用于无需挂载分类的独立静态内容页面。
+{% for article in latest %}
+    <h2>{{ article.translation.title }}</h2>
+{% endfor %}
+```
 
-#### 主题与模板
+### Documentation
 
-pinmok-content 完全集成 Pinmok 主题系统，前端页面由主题模板驱动。内置的模板标签覆盖文章列表、推荐内容、分类导航等常见场景，
-主题开发者只需在模板中调用标签即可获取内容——无需编写任何后端代码，也无需懂 Python。更换主题即可改变整站风格，而模板标签则让前端与后端彻底解耦。
-模板标签的使用方式及主题开发方法，请参考主题开发文档。
+For detailed information on theme development, template tags, data sources, and REST API usage, please refer to
+the [Pinmok Official Documentation](https://www.pinmok.com).
 
-#### REST API
+### Contributing
 
-pinmok-content 内置只读 REST API，适用于前后端分离、小程序等场景。API 挂载在 `/api/` 前缀下，提供文章列表、文章详情、分类列表、
-分类详情等接口，支持分页、排序、分类筛选等常用参数，返回标准 JSON 格式。
+Issues and pull requests are welcome. If you find this project useful, feel free to give it a star.
 
-接口鉴权与访问频率限制由项目层自行配置即可。
+- **GitHub**: [github.com/pinmok/pinmok-content](https://github.com/pinmok/pinmok-content)
+- **Gitee**: [gitee.com/pinmok/pinmok-content](https://gitee.com/pinmok/pinmok-content)
 
-### 依赖
+---
 
-| 依赖     | 版本      |
-|--------|---------|
-| Python | >= 3.12 |
-| pinmok | >= 1.0  |
+<a id="简体中文"></a>
 
-Django 版本要求随 pinmok 而定，无需单独指定。
+## 简体中文
+
+**Pinmok Content** 是 [Pinmok](https://www.pinmok.com) 框架的官方内容管理模块。提供文章、分类、页面管理功能，以及配套的前端展示支持，适用于企业官网、博客及中小型内容站点。
+
+### 核心特性
+
+- **内容管理**：提供文章、页面、分类的完整后台管理，支持多语言翻译、状态流转以及多媒体资源管理。
+- **主题驱动的前端**：深度集成 Pinmok 主题系统。内置的模板标签与数据源机制，使得前端开发者在大多数常见场景下，无需编写后端 Python 代码即可构建内容展示页面。
+- **独立的多媒体资源**：图集、附件、视频、音频独立于正文存储，支持多语言版本共享同一套资源文件，节省存储空间。
+- **REST API**：提供内置的只读 REST API 接口，支持分页、排序和筛选，适用于前后端分离或小程序场景。
+
+### 安装
+
+> **前置条件**：必须先安装 `pinmok` 核心框架。
+
+**1. 安装扩展包**
+
+```bash
+pip install pinmok-content
+```
+
+**2. 注册应用**
+在 `settings.py` 的 `INSTALLED_APPS` 中，将 `pinmok.content` 添加在 `pinmok.padmin` **之后**：
+
+```python
+INSTALLED_APPS = [
+    'pinmok.padmin',
+    'pinmok.content',  # 必须在 pinmok.padmin 之后
+    ...
+]
+```
+
+**3. 配置路由**
+在项目的 `urls.py` 中引入内容模块路由：
+
+```python
+from django.urls import path, include
+
+urlpatterns = [
+    ...,
+    path('', include('pinmok.content.urls')),
+]
+```
+
+**4. 执行迁移与同步菜单**
+
+```bash
+python manage.py migrate
+```
+
+完成迁移后，后台管理界面会出现 Pinmok Content 菜单。请执行一次菜单同步操作，以正确显示多语言名称及图标。
+
+### 快速使用
+
+安装完成后，您可以直接在 Django 模板中使用声明式标签获取并展示内容：
+
+```django
+{% load content_tags %}
+
+<!-- 获取指定分类下最新的 5 篇文章 -->
+{% articles category=category.uuid limit=5 as latest %}
+
+{% for article in latest %}
+    <h2>{{ article.translation.title }}</h2>
+{% endfor %}
+```
+
+### 文档
+
+有关主题开发、模板标签、数据源和 REST API 的详细说明，请参阅 [Pinmok 官方文档](https://www.pinmok.com)。
 
 ### 参与贡献
 
-欢迎提交 Issue 或 Pull Request。如果觉得有用，去仓库点个 Star 也是实实在在的支持。
+欢迎提交 Issue 或 Pull Request。如果觉得这个项目有用，欢迎给仓库点个 Star。
 
-- GitHub：[github.com/pinmok/pinmok-content](https://github.com/pinmok/pinmok-content)
-- Gitee：[gitee.com/pinmok/pinmok-content](https://gitee.com/pinmok/pinmok-content)
+- **GitHub**：[github.com/pinmok/pinmok-content](https://github.com/pinmok/pinmok-content)
+- **Gitee**：[gitee.com/pinmok/pinmok-content](https://gitee.com/pinmok/pinmok-content)

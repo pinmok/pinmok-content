@@ -41,7 +41,6 @@ extra:
   generator: false
 
 nav:
-  - Home: index.md
   - Getting Started: getting-started.md
   - Content Management: management.md
   - Theme Development: theme-dev.md
@@ -62,7 +61,6 @@ plugins:
           default: true
           site_name: Pinmok Content 文档
           nav_translations:
-            Home: 首页
             Getting Started: 入门指南
             Content Management: 内容管理
             Theme Development: 主题开发
